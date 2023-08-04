@@ -28,9 +28,11 @@ public class Chunk
     private readonly List<Vector3> _vertices = new();
     private readonly List<int> _indices = new();
     private readonly List<Vector2> _uvs = new();
+    private readonly List<MaterialPropertyBlock> _blocksProperties = new();
     private MeshRenderer _meshRenderer;
     private MeshFilter _meshFilter;
     private GameObject _chunkGameObject;
+    private Mesh _mesh;
 
     public Chunk(Vector2Int position, WorldsIds worldId, ChunkTypes chunkType)
     {
@@ -77,10 +79,12 @@ public class Chunk
         _chunkGameObject.transform.parent = GetParent();
         _chunkGameObject.transform.localPosition = new Vector3(Position.x * Globals.ChunkSize, Position.y * Globals.ChunkSize, 0);
 
+        
         _meshFilter = _chunkGameObject.AddComponent<MeshFilter>();
+        _mesh = new Mesh();
+        _meshFilter.mesh = _mesh;
         _meshRenderer = _chunkGameObject.AddComponent<MeshRenderer>();
         _meshRenderer.material = Resources.Load<Material>("Materials/BlockMaterial");
-        Debug.Log(_meshRenderer.material);
     }
 
     private void GenerateBlocks()
@@ -96,24 +100,63 @@ public class Chunk
         _vertices.Clear();
         _indices.Clear();
         _uvs.Clear();
+        _blocksProperties.Clear();
+
+        bool[,] visited = new bool[Globals.ChunkSize, Globals.ChunkSize];
 
         for (int x = 0; x < Globals.ChunkSize; x++)
         {
             for (int y = 0; y < Globals.ChunkSize; y++)
             {
+                if (visited[x, y]) continue;
+
                 int blockPosition = x + y * Globals.ChunkSize;
                 ushort blockId = Blocs[blockPosition].Id;
+                ushort textureId = AllBlocksStats.GetBlockStatsFromId(blockId).TextureId;
+
                 if (blockId == BlockIds.Air)
                 {
+                    visited[x, y] = true;
                     continue;
+                }
+
+                int width = 1, height = 1;
+
+                while (x + width < Globals.ChunkSize &&
+                       Blocs[x + width + y * Globals.ChunkSize].Id == blockId)
+                {
+                    width++;
+                }
+
+                bool validHeight = true;
+                while (validHeight && y + height < Globals.ChunkSize)
+                {
+                    for (int i = 0; i < width; i++)
+                    {
+                        if (Blocs[x + i + (y + height) * Globals.ChunkSize].Id != blockId)
+                        {
+                            validHeight = false;
+                            break;
+                        }
+                    }
+
+                    if (validHeight) height++;
+                }
+
+                for (int i = x; i < x + width; i++)
+                {
+                    for (int j = y; j < y + height; j++)
+                    {
+                        visited[i, j] = true;
+                    }
                 }
 
                 _vertices.AddRange(new Vector3[]
                 {
                     new Vector3(x, y, 0),
-                    new Vector3(x + 1, y, 0),
-                    new Vector3(x + 1, y + 1, 0),
-                    new Vector3(x, y + 1, 0)
+                    new Vector3(x + width, y, 0),
+                    new Vector3(x + width, y + height, 0),
+                    new Vector3(x, y + height, 0)
                 });
 
                 _indices.AddRange(new int[]
@@ -126,38 +169,37 @@ public class Chunk
                     _vertices.Count - 2
                 });
 
-                AddUVs(AllBlocksStats.GetBlockStatsFromId(blockId).TextureId);
+                _uvs.AddRange(new Vector2[]
+                {
+                    new Vector2(0f, 0f),
+                    new Vector2(width, 0f),
+                    new Vector2(width, height),
+                    new Vector2(0f, height)
+                });
+
+                AddBlockProperties(textureId);
             }
         }
     }
 
-    private void AddUVs(int textureID)
+    private void AddBlockProperties(int textureId)
     {
-        float y = textureID / Globals.TextureAtlasSizeInBlocks;
-        float x = textureID - (y * Globals.TextureAtlasSizeInBlocks);
-        x *= Globals.NormalizedBlockTextureSize;
-        y *= Globals.NormalizedBlockTextureSize;
-        y = 1f - y - Globals.NormalizedBlockTextureSize;
-
-        _uvs.AddRange(new Vector2[]
-        {
-            new Vector2(x, y),
-            new Vector2(x + Globals.NormalizedBlockTextureSize, y),
-            new Vector2(x + Globals.NormalizedBlockTextureSize, y + Globals.NormalizedBlockTextureSize),
-            new Vector2(x, y + Globals.NormalizedBlockTextureSize)
-        });
+        MaterialPropertyBlock blockProperties = new();
+        blockProperties.SetFloat("_TextureIndex", textureId);
+        _blocksProperties.Add(blockProperties);
     }
 
     private void GenerateMesh()
     {
-        Mesh mesh = new()
-        {
-            vertices = _vertices.ToArray(),
-            triangles = _indices.ToArray(),
-            uv = _uvs.ToArray()
-        };
-        mesh.RecalculateNormals();
+        _mesh.Clear();
+        _mesh.vertices = _vertices.ToArray();
+        _mesh.triangles = _indices.ToArray();
+        _mesh.uv = _uvs.ToArray();
+        _mesh.RecalculateNormals();
 
-        _meshFilter.mesh = mesh;
+        for (int i = 0; i < _blocksProperties.Count; i++)
+        {
+            _meshRenderer.SetPropertyBlock(_blocksProperties[i], i);
+        }
     }
 }
