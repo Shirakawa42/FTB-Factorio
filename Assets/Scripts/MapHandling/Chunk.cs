@@ -28,6 +28,7 @@ public class Chunk
     private readonly List<Vector3> _vertices = new();
     private readonly List<int> _indices = new();
     private readonly List<Vector2> _uvs = new();
+    private readonly List<Vector2> _uvts = new();
     private readonly List<MaterialPropertyBlock> _blocksProperties = new();
     private MeshRenderer _meshRenderer;
     private MeshFilter _meshFilter;
@@ -91,7 +92,10 @@ public class Chunk
     {
         for (int i = 0; i < Blocs.Length; i++)
         {
-            Blocs[i] = new Block(BlockIds.Grass);
+            if (Random.Range(0, 100) < 50)
+                Blocs[i] = new Block(BlockIds.Grass);
+            else
+                Blocs[i] = new Block(BlockIds.Stone);
         }
     }
 
@@ -100,6 +104,7 @@ public class Chunk
         _vertices.Clear();
         _indices.Clear();
         _uvs.Clear();
+        _uvts.Clear();
         _blocksProperties.Clear();
 
         bool[,] visited = new bool[Globals.ChunkSize, Globals.ChunkSize];
@@ -177,16 +182,16 @@ public class Chunk
                     new Vector2(0f, height)
                 });
 
-                AddBlockProperties(textureId);
+                _uvts.AddRange(new Vector2[]
+                {
+                    new Vector2(textureId, 0f),
+                    new Vector2(textureId, 0f),
+                    new Vector2(textureId, 0f),
+                    new Vector2(textureId, 0f)
+                });
+
             }
         }
-    }
-
-    private void AddBlockProperties(int textureId)
-    {
-        MaterialPropertyBlock blockProperties = new();
-        blockProperties.SetFloat("_TextureIndex", textureId);
-        _blocksProperties.Add(blockProperties);
     }
 
     private void GenerateMesh()
@@ -195,11 +200,7 @@ public class Chunk
         _mesh.vertices = _vertices.ToArray();
         _mesh.triangles = _indices.ToArray();
         _mesh.uv = _uvs.ToArray();
+        _mesh.uv2 = _uvts.ToArray();
         _mesh.RecalculateNormals();
-
-        for (int i = 0; i < _blocksProperties.Count; i++)
-        {
-            _meshRenderer.SetPropertyBlock(_blocksProperties[i], i);
-        }
     }
 }
