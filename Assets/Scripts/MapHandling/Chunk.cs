@@ -80,12 +80,14 @@ public class Chunk
         _chunkGameObject.transform.parent = GetParent();
         _chunkGameObject.transform.localPosition = new Vector3(Position.x * Globals.ChunkSize, Position.y * Globals.ChunkSize, 0);
 
-
         _meshFilter = _chunkGameObject.AddComponent<MeshFilter>();
         _mesh = new Mesh();
         _meshFilter.mesh = _mesh;
         _meshRenderer = _chunkGameObject.AddComponent<MeshRenderer>();
-        _meshRenderer.material = Resources.Load<Material>("Materials/BlockMaterial");
+        if (ChunkType == ChunkTypes.Floor)
+            _meshRenderer.material = Resources.Load<Material>("Materials/BlockMaterialFloor");
+        else if (ChunkType == ChunkTypes.Solid)
+            _meshRenderer.material = Resources.Load<Material>("Materials/BlockMaterialSolid");
     }
 
     private void GenerateBlocks()
@@ -93,7 +95,10 @@ public class Chunk
         for (int i = 0; i < Blocs.Length; i++)
         {
             Vector2Int worldPosition = new(Position.x * Globals.ChunkSize + i % Globals.ChunkSize, Position.y * Globals.ChunkSize + i / Globals.ChunkSize);
-            Blocs[i] = new Block(Noise.GetBlockAtWorldPosition(worldPosition));
+            if (ChunkType == ChunkTypes.Floor)
+                Blocs[i] = new Block(Noise.GetFloorBlockAtWorldPosition(worldPosition, WorldId));
+            else if (ChunkType == ChunkTypes.Solid)
+                Blocs[i] = new Block(Noise.GetSolidBlockAtWorldPosition(worldPosition, WorldId));
         }
     }
 
@@ -127,7 +132,7 @@ public class Chunk
 
                 while (x + width < Globals.ChunkSize &&
                         Blocs[x + width + y * Globals.ChunkSize].Id == blockId &&
-                        !visited[x + width, y])  // Check that the block has not been visited
+                        !visited[x + width, y])
                 {
                     width++;
                 }
@@ -138,7 +143,7 @@ public class Chunk
                     for (int i = 0; i < width; i++)
                     {
                         if (Blocs[x + i + (y + height) * Globals.ChunkSize].Id != blockId ||
-                            visited[x + i, y + height]) // Check that the block has not been visited
+                            visited[x + i, y + height])
                         {
                             validHeight = false;
                             break;

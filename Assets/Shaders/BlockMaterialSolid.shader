@@ -1,4 +1,4 @@
-Shader "Custom/TextureArrayShader"
+Shader "Custom/BlockMaterialSolid"
 {
     Properties
     {
@@ -40,8 +40,8 @@ Shader "Custom/TextureArrayShader"
 
             fixed4 frag (v2f i) : SV_Target
             {
-                float2 uvRepeat = fmod(i.uv, 1.0); // Repeat the texture
-                return UNITY_SAMPLE_TEX2DARRAY(_MainTex, float3(uvRepeat, i.textureIndex));
+                float2 uvRepeat = fmod(i.uv, 1.0);
+                return UNITY_SAMPLE_TEX2DARRAY(_MainTex, float3(uvRepeat, i.textureIndex)) * 0.3;
             }
             ENDCG
         }

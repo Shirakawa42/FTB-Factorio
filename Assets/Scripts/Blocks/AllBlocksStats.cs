@@ -4,6 +4,7 @@ using UnityEngine;
 
 public static class AllBlocksStats
 {
+    public static BlockStats Air = new(BlockIds.Air, "Air", false, false, 0, 0, BlockTypes.Gas, 9999);
     public static BlockStats Stone = new(BlockIds.Stone, "Stone", true, false, 10, 1, BlockTypes.Hard, 0);
     public static BlockStats Dirt = new(BlockIds.Dirt, "Dirt", true, false, 10, 1, BlockTypes.Soft, 1);
     public static BlockStats Grass = new(BlockIds.Grass, "Grass", true, false, 10, 1, BlockTypes.Soft, 7);
@@ -16,7 +17,9 @@ public static class AllBlocksStats
 
     public static BlockStats GetBlockStatsFromId(ushort id)
     {
-        if (id == BlockIds.Stone)
+        if (id == BlockIds.Air)
+            return Air;
+        else if (id == BlockIds.Stone)
             return Stone;
         else if (id == BlockIds.Dirt)
             return Dirt;

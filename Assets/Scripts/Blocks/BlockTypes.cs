@@ -6,5 +6,6 @@ public enum BlockTypes
 {
     Hard,
     Soft,
-    Liquid
+    Liquid,
+    Gas
 }
