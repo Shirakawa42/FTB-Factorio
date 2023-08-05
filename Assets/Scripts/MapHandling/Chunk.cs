@@ -92,10 +92,8 @@ public class Chunk
     {
         for (int i = 0; i < Blocs.Length; i++)
         {
-            if (Random.Range(0, 100) < 50)
-                Blocs[i] = new Block(BlockIds.Grass);
-            else
-                Blocs[i] = new Block(BlockIds.Stone);
+            Vector2Int worldPosition = new(Position.x * Globals.ChunkSize + i % Globals.ChunkSize, Position.y * Globals.ChunkSize + i / Globals.ChunkSize);
+            Blocs[i] = new Block(Noise.GetBlockAtWorldPosition(worldPosition));
         }
     }
 

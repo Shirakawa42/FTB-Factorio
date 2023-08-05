@@ -26,6 +26,6 @@ public static class Worlds
         else if (id == WorldsIds.hardcore_depth)
             return GameObject.Find("hardcore_depth");
         else
-            throw new System.Exception("World id does not exist");
+            throw new System.Exception($"WorldsIds {id} not found");
     }
 }
