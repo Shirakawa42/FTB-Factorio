@@ -80,7 +80,7 @@ public class Chunk
         _chunkGameObject.transform.parent = GetParent();
         _chunkGameObject.transform.localPosition = new Vector3(Position.x * Globals.ChunkSize, Position.y * Globals.ChunkSize, 0);
 
-        
+
         _meshFilter = _chunkGameObject.AddComponent<MeshFilter>();
         _mesh = new Mesh();
         _meshFilter.mesh = _mesh;
@@ -126,7 +126,8 @@ public class Chunk
                 int width = 1, height = 1;
 
                 while (x + width < Globals.ChunkSize &&
-                       Blocs[x + width + y * Globals.ChunkSize].Id == blockId)
+                        Blocs[x + width + y * Globals.ChunkSize].Id == blockId &&
+                        !visited[x + width, y])  // Check that the block has not been visited
                 {
                     width++;
                 }
@@ -136,7 +137,8 @@ public class Chunk
                 {
                     for (int i = 0; i < width; i++)
                     {
-                        if (Blocs[x + i + (y + height) * Globals.ChunkSize].Id != blockId)
+                        if (Blocs[x + i + (y + height) * Globals.ChunkSize].Id != blockId ||
+                            visited[x + i, y + height]) // Check that the block has not been visited
                         {
                             validHeight = false;
                             break;
