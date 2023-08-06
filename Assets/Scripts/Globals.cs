@@ -9,6 +9,7 @@ public static class Globals
     public const int Seed = 56231;
 
     public static GameObject Player;
+    public static GameObject BlockBreaking;
 
     public static Vector2Int GetChunkPositionFromWorldPosition(Vector3 worldPosition)
     {
@@ -34,5 +35,24 @@ public static class Globals
         if (Map.SolidChunks.ContainsKey(chunkPosition))
             return AllBlocksStats.GetBlockStatsFromId(Map.SolidChunks[chunkPosition].Blocs[blockPosition.x + blockPosition.y * ChunkSize].Id);
         return AllBlocksStats.GetBlockStatsFromId(BlockIds.Air);
+    }
+
+    public static void RemoveBlockAtWorldPosition(Vector3 worldPosition, bool willLoot)
+    {
+        Vector2Int chunkPosition = GetChunkPositionFromWorldPosition(worldPosition);
+        Vector2Int blockPosition = GetBlockPositionFromWorldPosition(worldPosition);
+
+        if (willLoot)
+        {
+            // todo loot
+        }
+
+        if (Map.SolidChunks.ContainsKey(chunkPosition))
+            Map.SolidChunks[chunkPosition].AddBlock(blockPosition, BlockIds.Air);
+    }
+
+    public static Vector2Int WorldPositionToVector2Int(Vector3 worldPosition)
+    {
+        return new Vector2Int(Mathf.FloorToInt(worldPosition.x), Mathf.FloorToInt(worldPosition.y));
     }
 }

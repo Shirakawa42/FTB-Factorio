@@ -2,15 +2,36 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Item
+public class Item
 {
-    public abstract ushort Id { get; }
-    public abstract string Name { get; }
-    public abstract string Description { get; }
-    public abstract int MaxStack { get; }
-    public abstract int CurrentStack { get; set; }
-    public abstract Texture2D Texture2D { get; }
+    public ushort Id { get; }
+    public string Name { get; }
+    public string Description { get; }
+    public int MaxStack { get; }
+    public int CurrentStack { get; set; }
+    public Sprite Sprite { get; }
     
-    public abstract void LeftClick();
-    public abstract void RightClick();
+    public virtual void LeftClick(Animation animation)
+    {
+
+    }
+    public virtual void RightClick(Animation animation)
+    {
+
+    }
+
+    public Item(ushort id, string name, string description, int maxStack, int currentStack, Sprite sprite)
+    {
+        Id = id;
+        Name = name;
+        Description = description;
+        MaxStack = maxStack;
+        CurrentStack = currentStack;
+        Sprite = sprite;
+    }
+
+    public virtual Item Clone()
+    {
+        return new Item(Id, Name, Description, MaxStack, CurrentStack, Sprite);
+    }
 }

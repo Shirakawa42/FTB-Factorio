@@ -8,20 +8,27 @@ public class BlockStats
     public string Name;
     public bool IsSolid;
     public bool IsTransparent;
-    public ushort Hp;
+    public short Hp;
+    public short HpMax;
     public ushort SolidityLevel;
     public BlockTypes BlockType;
     public ushort TextureId;
 
-    public BlockStats(ushort id, string name, bool isSolid, bool isTransparent, ushort hp, ushort solidityLevel, BlockTypes blockType, ushort textureId)
+    public BlockStats(ushort id, string name, bool isSolid, bool isTransparent, short hpMax, ushort solidityLevel, BlockTypes blockType, ushort textureId)
     {
         Id = id;
         Name = name;
         IsSolid = isSolid;
         IsTransparent = isTransparent;
-        Hp = hp;
+        Hp = hpMax;
+        HpMax = hpMax;
         SolidityLevel = solidityLevel;
         BlockType = blockType;
         TextureId = textureId;
+    }
+
+    public float GetHpPercentage()
+    {
+        return (float)Hp / HpMax;
     }
 }

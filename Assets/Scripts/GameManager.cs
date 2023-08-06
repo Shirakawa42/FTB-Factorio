@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
     void Awake()
     {
         Globals.Player = GameObject.Find("Player");
+        Globals.BlockBreaking = GameObject.Find("BlockBreaking");
         _playerChunkPosition = new Vector2Int(int.MaxValue, int.MaxValue);
     }
 

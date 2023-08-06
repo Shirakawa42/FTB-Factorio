@@ -7,6 +7,9 @@ public class PlayerController : MonoBehaviour
     public float Speed = 8f;
     private float PlayerSize;
 
+    private int _cameraBottomLimit = 2;
+    private int _cameraTopLimit = 15;
+
     void Start()
     {
         Transform playerSkin = transform.Find("PlayerSkin");
@@ -17,6 +20,16 @@ public class PlayerController : MonoBehaviour
     {
         HandleMovements();
         RotatePlayer();
+        ZoomPlayer();
+    }
+
+    private void ZoomPlayer()
+    {
+        float scroll = Input.GetAxis("Mouse ScrollWheel");
+        if (scroll > 0f && Camera.main.orthographicSize > _cameraBottomLimit)
+            Camera.main.orthographicSize -= 0.5f;
+        else if (scroll < 0f && Camera.main.orthographicSize < _cameraTopLimit)
+            Camera.main.orthographicSize += 0.5f;
     }
 
     private void RotatePlayer()
