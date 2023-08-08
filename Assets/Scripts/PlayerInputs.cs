@@ -28,12 +28,10 @@ public class PlayerInputs : MonoBehaviour
     public void SetEquippedItem(Item item)
     {
         EquippedItem = item;
-
-        if (item != null) {
-            Debug.Log("Equipped item: " + item.Name );
-        } else {
-            Debug.Log("Equipped item: null");
-        }
+        if (EquippedItem == null)
+            EquippedItemSpriteRenderer.sprite = null;
+        else
+            EquippedItemSpriteRenderer.sprite = EquippedItem.Sprite;
     }
 
     private void Inputs()
