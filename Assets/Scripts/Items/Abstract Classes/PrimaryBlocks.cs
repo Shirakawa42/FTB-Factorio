@@ -16,7 +16,8 @@ public class PrimaryBlocks : Item
     public override void RightClick(Animation animation)
     {
         Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        if (Vector2.Distance(mousePosition, Globals.Player.transform.position) > 4f || Globals.GetSolidBlockStatsFromWorldPosition(mousePosition).Id == ItemIds.Air)
+        float distance = Vector2.Distance(mousePosition, Globals.Player.transform.position);
+        if (distance > 4f || distance < 1f || Globals.GetSolidBlockStatsFromWorldPosition(mousePosition).Id != ItemIds.Air)
             return;
         Globals.SetSolidBlockStatsAtWorldPosition(mousePosition, Id);
     }

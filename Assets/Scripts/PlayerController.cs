@@ -7,8 +7,8 @@ public class PlayerController : MonoBehaviour
     public float Speed = 8f;
     private float PlayerSize;
 
-    private int _cameraBottomLimit = 2;
-    private int _cameraTopLimit = 15;
+    private const int _cameraBottomLimit = 2;
+    private const int _cameraTopLimit = 15;
 
     void Start()
     {

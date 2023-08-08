@@ -20,6 +20,7 @@ public class Toolbar : MonoBehaviour
         AddItemToSlot(ItemInfos.GenerateItemFromId(ItemIds.Pickaxe_Iron), 2);
         AddItemToSlot(ItemInfos.GenerateItemFromId(ItemIds.Pickaxe_Gold), 3);
         AddItemToSlot(ItemInfos.GenerateItemFromId(ItemIds.Pickaxe_Diamond), 4);
+        AddItemToSlot(ItemInfos.GenerateItemFromId(ItemIds.Stone), 5);
 
         SelectSlot(0);
     }

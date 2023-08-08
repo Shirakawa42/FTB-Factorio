@@ -7,8 +7,10 @@ public class PlayerInputs : MonoBehaviour
     private Item EquippedItem = null;
     private SpriteRenderer EquippedItemSpriteRenderer = null;
     private Animation _animation = null;
-    private float _cooldownMax = 0.4f;
-    private float _cooldown = 0f;
+    private const float _cooldownMaxRight = 0.1f;
+    private const float _cooldownMaxLeft = 0.1f;
+    private float _cooldownRight = 0f;
+    private float _cooldownLeft = 0f;
 
     void Start()
     {
@@ -36,18 +38,20 @@ public class PlayerInputs : MonoBehaviour
 
     private void Inputs()
     {
-        if (_cooldown > 0)
-            _cooldown -= Time.deltaTime;
+        if (_cooldownRight > 0)
+            _cooldownRight -= Time.deltaTime;
+        if (_cooldownLeft > 0)
+            _cooldownLeft -= Time.deltaTime;
 
-        if (Input.GetMouseButton(0) && EquippedItem != null && _cooldown <= 0)
+        if (Input.GetMouseButton(0) && EquippedItem != null && _cooldownLeft <= 0)
         {
             EquippedItem.LeftClick(_animation);
-            _cooldown = _cooldownMax;
+            _cooldownLeft = _cooldownMaxLeft;
         }
-        else if (Input.GetMouseButton(1) && EquippedItem != null && _cooldown <= 0)
+        else if (Input.GetMouseButton(1) && EquippedItem != null && _cooldownRight <= 0)
         {
             EquippedItem.RightClick(_animation);
-            _cooldown = _cooldownMax;
+            _cooldownRight = _cooldownMaxRight;
         }
     }
 }
