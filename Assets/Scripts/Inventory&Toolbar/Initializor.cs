@@ -39,6 +39,7 @@ public class Initializor : MonoBehaviour
             _slot.transform.SetParent(_Toolbar.transform);
             _slot.transform.localPosition = new Vector3(spacing / 2 + leftBorderX + spacing * i, 0, 0);
             toolbarSlots.Add(_slot.GetComponent<Slot>());
+            toolbarSlots[i].Init();
         }
     }
 }

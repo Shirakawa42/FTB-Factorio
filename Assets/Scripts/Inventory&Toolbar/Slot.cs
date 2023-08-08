@@ -1,20 +1,21 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Slot : MonoBehaviour
 {
     public Item _item = null;
-    // private SpriteRenderer _spriteRenderer = null;
+    private Image _Image = null;
 
-    void Start()
+    public void Init()
     {
-        // _spriteRenderer = transform.Find("Item").GetComponent<SpriteRenderer>();
+        _Image = transform.Find("Item").GetComponent<Image>();
     }
 
     public void SetItem(Item item)
     {
         _item = item;
-        // _spriteRenderer.sprite = item.Sprite;
+        _Image.sprite = item.Sprite;
     }
 }

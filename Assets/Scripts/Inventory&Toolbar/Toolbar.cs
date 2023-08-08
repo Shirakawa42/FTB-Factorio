@@ -9,18 +9,18 @@ public class Toolbar : MonoBehaviour
     private GameObject Highlight;
     private Slot selectedSlot;
     private PlayerInputs _playerInputs = null;
-    private readonly Dictionary<ushort, ushort> itemIdInSlots = new();
+    private readonly Item[] itemInSlots = new Item[Globals.ToolbarSlots];
 
     void Start()
     {
         _playerInputs = Globals.Player.GetComponent<PlayerInputs>();
 
-        // Add Item in toolbar
-        itemIdInSlots.Add(0, 0);
-        itemIdInSlots.Add(1, 1);
-        itemIdInSlots.Add(2, 2);
+        AddItemToSlot(ItemInfos.GenerateItemFromId(ItemIds.Pickaxe_Wood), 0);
+        AddItemToSlot(ItemInfos.GenerateItemFromId(ItemIds.Pickaxe_Stone), 1);
+        AddItemToSlot(ItemInfos.GenerateItemFromId(ItemIds.Pickaxe_Iron), 2);
+        AddItemToSlot(ItemInfos.GenerateItemFromId(ItemIds.Pickaxe_Gold), 3);
+        AddItemToSlot(ItemInfos.GenerateItemFromId(ItemIds.Pickaxe_Diamond), 4);
 
-        // Set first selected slot
         SelectSlot(0);
     }
 
@@ -29,13 +29,22 @@ public class Toolbar : MonoBehaviour
         Highlight = Instantiate(highlight);
     }
 
+    public void AddItemToSlot(Item item, ushort slot)
+    {
+        if (slot + 1 > Globals.ToolbarSlots)
+            return;
+
+        toolbarSlots[slot].SetItem(item);
+        itemInSlots[slot] = item;
+    }
+
     private void SelectSlot(ushort index)
     {
         if (index + 1 > Globals.ToolbarSlots)
             return;
 
-        if (itemIdInSlots.ContainsKey(index))
-            _playerInputs.SetEquippedItem(ItemInfos.GetItemFromId(itemIdInSlots[index]));
+        if (itemInSlots[index] != null)
+            _playerInputs.SetEquippedItem(itemInSlots[index]);
         else
             _playerInputs.SetEquippedItem(null);
 
