@@ -16,7 +16,7 @@ public class GameManager : MonoBehaviour
 
     private void LoadAroundPlayer()
     {
-        _playerPosition = Globals.Player.transform.position;
+        // _playerPosition = Globals.Player.transform.position;
         Vector2Int chunkPosition = new((int)_playerPosition.x / Globals.ChunkSize, (int)_playerPosition.y / Globals.ChunkSize);
 
         if (chunkPosition != _playerChunkPosition)

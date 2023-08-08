@@ -7,6 +7,8 @@ public static class Globals
     public const int ChunkSize = 64;
     public const int LoadDistance = 2;
     public const int Seed = 56231;
+    public const int ToolbarSlots = 9;
+    public const int InventorySlots = 27;
 
     public static GameObject Player;
     public static GameObject BlockBreaking;

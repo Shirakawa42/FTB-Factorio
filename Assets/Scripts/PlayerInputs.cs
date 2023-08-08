@@ -26,7 +26,13 @@ public class PlayerInputs : MonoBehaviour
     public void SetEquippedItem(Item item)
     {
         EquippedItem = item;
-        EquippedItemSpriteRenderer.sprite = item.Sprite;
+
+        if (item != null) {
+            Debug.Log("Equipped item: " + item.Name );
+        } else {
+            Debug.Log("Equipped item: null");
+        }
+        // EquippedItemSpriteRenderer.sprite = item.GetComponent<SpriteRenderer>().sprite ;
     }
 
     private void Inputs()
