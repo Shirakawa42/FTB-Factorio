@@ -4,45 +4,41 @@ using UnityEngine;
 
 public class Initializor : MonoBehaviour
 {
-    public GameObject Highlight;
-    public GameObject Slot;
-    private GameObject Toolbar;
+    private GameObject _Toolbar;
+
+    private GameObject _SlotPrefab;
+    private GameObject _HighlightPrefab;
+    private GameObject _ToolbarPrefab;
 
     // Start is called before the first frame update
-    void Start() {
-        float slotWidth = Slot.GetComponent<RectTransform>().rect.width;
-        float toolbarWidth = slotWidth * Globals.ToolbarSlots;
+    void Start()
+    {
+        _SlotPrefab = Resources.Load<GameObject>("Prefabs/Slot");
+        _HighlightPrefab = Resources.Load<GameObject>("Prefabs/Highlight");
+        _ToolbarPrefab = Resources.Load<GameObject>("Prefabs/Toolbar");
 
-        Toolbar = new GameObject("Toolbar");
-        Toolbar.transform.SetParent(this.transform);
-        Toolbar.transform.localPosition = new Vector3(0, -750, 0);
-        Toolbar.AddComponent<RectTransform>();
-        Toolbar.AddComponent<Toolbar>();
-        Toolbar.GetComponent<RectTransform>().sizeDelta = new Vector2(toolbarWidth, 80);
+        _Toolbar = Instantiate(_ToolbarPrefab, transform);
 
-        float leftBorderX = Toolbar.GetComponent<RectTransform>().anchoredPosition.x - Toolbar.GetComponent<RectTransform>().rect.width / 2f;
-        float spacing = toolbarWidth / Globals.ToolbarSlots;
+        InitSlots();
 
-        List<Slot> toolbarSlots = Toolbar.GetComponent<Toolbar>().toolbarSlots;
-
-        for (int i = 0; i < Globals.ToolbarSlots; i++) {
-            // create a new slot and assign it to the toolbar, use it like it should be centered
-            GameObject _slot = Instantiate(Slot, Toolbar.transform);
-            _slot.name = "Slot " + i;
-            _slot.transform.SetParent(Toolbar.transform);
-
-            // Calculate the position for the slot
-            _slot.transform.localPosition = new Vector3(spacing/2 + leftBorderX + spacing * i, 0, 0);
-
-            toolbarSlots.Add(_slot.GetComponent<Slot>());
-        }
-
-        Toolbar.GetComponent<Toolbar>().SetHighlight(Highlight);
+        _Toolbar.GetComponent<Toolbar>().SetHighlight(_HighlightPrefab);
     }
 
-    // Update is called once per frame
-    void Update()
+    private void InitSlots()
     {
-        
+        float slotWidth = _SlotPrefab.GetComponent<RectTransform>().rect.width;
+        float leftBorderX = _Toolbar.GetComponent<RectTransform>().anchoredPosition.x - _Toolbar.GetComponent<RectTransform>().rect.width / 2f;
+        float toolbarWidth = slotWidth * Globals.ToolbarSlots;
+        float spacing = toolbarWidth / Globals.ToolbarSlots;
+
+        List<Slot> toolbarSlots = _Toolbar.GetComponent<Toolbar>().toolbarSlots;
+        for (int i = 0; i < Globals.ToolbarSlots; i++)
+        {
+            GameObject _slot = Instantiate(_SlotPrefab, _Toolbar.transform);
+            _slot.name = "Slot " + i;
+            _slot.transform.SetParent(_Toolbar.transform);
+            _slot.transform.localPosition = new Vector3(spacing / 2 + leftBorderX + spacing * i, 0, 0);
+            toolbarSlots.Add(_slot.GetComponent<Slot>());
+        }
     }
 }

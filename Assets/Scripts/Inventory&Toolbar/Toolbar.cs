@@ -4,37 +4,15 @@ using UnityEngine;
 
 public class Toolbar : MonoBehaviour
 {
-    [SerializeField] public List<Slot> toolbarSlots = new List<Slot>();
-    
+    public List<Slot> toolbarSlots = new();
+
     private GameObject Highlight;
     private Slot selectedSlot;
     private PlayerInputs _playerInputs = null;
+    private readonly Dictionary<ushort, ushort> itemIdInSlots = new();
 
-    Dictionary<ushort, ushort> itemIdInSlots = new Dictionary<ushort, ushort>();
-
-    public void SetHighlight(GameObject highlight)
+    void Start()
     {
-        Highlight = Instantiate(highlight);
-    }
-
-    private void SelectSlot(ushort index) {
-        if (index + 1 > Globals.ToolbarSlots) {
-            return ;
-        }
-
-        if (itemIdInSlots.ContainsKey(index)) {
-            _playerInputs.SetEquippedItem(ItemInfos.GetItemFromId(itemIdInSlots[index]));
-        } else {
-            _playerInputs.SetEquippedItem(null);
-        }
-
-        selectedSlot = toolbarSlots[index];
-
-        Highlight.transform.SetParent(selectedSlot.transform);
-        Highlight.transform.localPosition = new Vector3(0, 0, 0);
-    }
-    
-    void Start() {
         _playerInputs = Globals.Player.GetComponent<PlayerInputs>();
 
         // Add Item in toolbar
@@ -46,25 +24,47 @@ public class Toolbar : MonoBehaviour
         SelectSlot(0);
     }
 
-    void Update() {
-        if (Input.GetKeyDown(KeyCode.Alpha1)) {
+    public void SetHighlight(GameObject highlight)
+    {
+        Highlight = Instantiate(highlight);
+    }
+
+    private void SelectSlot(ushort index)
+    {
+        if (index + 1 > Globals.ToolbarSlots)
+            return;
+
+        if (itemIdInSlots.ContainsKey(index))
+            _playerInputs.SetEquippedItem(ItemInfos.GetItemFromId(itemIdInSlots[index]));
+        else
+            _playerInputs.SetEquippedItem(null);
+
+        selectedSlot = toolbarSlots[index];
+
+        Highlight.transform.SetParent(selectedSlot.transform);
+        Highlight.transform.localScale = new Vector3(1, 1, 1);
+        Highlight.transform.localPosition = new Vector3(0, 0, 0);
+    }
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Alpha1))
             SelectSlot(0);
-        } else if (Input.GetKeyDown(KeyCode.Alpha2)) {
+        else if (Input.GetKeyDown(KeyCode.Alpha2))
             SelectSlot(1);
-        } else if (Input.GetKeyDown(KeyCode.Alpha3)) {
+        else if (Input.GetKeyDown(KeyCode.Alpha3))
             SelectSlot(2);
-        } else if (Input.GetKeyDown(KeyCode.Alpha4)) {
+        else if (Input.GetKeyDown(KeyCode.Alpha4))
             SelectSlot(3);
-        } else if (Input.GetKeyDown(KeyCode.Alpha5)) {
+        else if (Input.GetKeyDown(KeyCode.Alpha5))
             SelectSlot(4);
-        } else if (Input.GetKeyDown(KeyCode.Alpha6)) {
+        else if (Input.GetKeyDown(KeyCode.Alpha6))
             SelectSlot(5);
-        } else if (Input.GetKeyDown(KeyCode.Alpha7)) {
+        else if (Input.GetKeyDown(KeyCode.Alpha7))
             SelectSlot(6);
-        } else if (Input.GetKeyDown(KeyCode.Alpha8)) {
+        else if (Input.GetKeyDown(KeyCode.Alpha8))
             SelectSlot(7);
-        } else if (Input.GetKeyDown(KeyCode.Alpha9)) {
+        else if (Input.GetKeyDown(KeyCode.Alpha9))
             SelectSlot(8);
-        }
     }
 }

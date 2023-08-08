@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5456957375865805707}
   - component: {fileID: 6584550741400894815}
   m_Layer: 0
-  m_Name: HighlightToolbarSlot
+  m_Name: Highlight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
