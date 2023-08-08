@@ -12,19 +12,20 @@ public class BlockBreaking : MonoBehaviour
     public Sprite BreakingSprite6;
 
     private Vector2Int _lastAttackedBlockPosition = new(0, 0);
-    private BlockStats _lastAttackedBlock = null;
+    private PrimaryBlocks _lastAttackedBlock = null;
     private float _timeBeforeReset = 1.5f;
     private const float _timeBeforeResetMax = 1.5f;
     private SpriteRenderer _spriteRenderer;
+    private GameObject _groundItemPrefab;
 
     public void AttackBlock(Vector3 blockWorldPosition, float miningPower, BlockTypes blockType, int miningLevel)
     {
         bool willLoot = true;
         Vector2Int blockWorldPositionInt = Globals.WorldPositionToVector2Int(blockWorldPosition);
 
-        BlockStats block = Globals.GetSolidBlockStatsFromWorldPosition(blockWorldPosition);
+        PrimaryBlocks block = Globals.GetSolidBlockStatsFromWorldPosition(blockWorldPosition);
 
-        if (block.Id == BlockIds.Air)
+        if (block.Id == ItemIds.Air)
             return;
 
         if (_lastAttackedBlock != null && _lastAttackedBlockPosition != blockWorldPositionInt)
@@ -37,6 +38,7 @@ public class BlockBreaking : MonoBehaviour
         {
             willLoot = false;
             miningPower /= 4;
+            miningPower = Mathf.Max(miningPower, 1f);
         }
         block.Hp -= (short)Mathf.FloorToInt(miningPower);
 
@@ -46,7 +48,14 @@ public class BlockBreaking : MonoBehaviour
         {
             _lastAttackedBlock.Hp = _lastAttackedBlock.HpMax;
             Globals.BlockBreaking.GetComponent<SpriteRenderer>().sprite = null;
-            Globals.RemoveBlockAtWorldPosition(blockWorldPosition, willLoot);
+            Globals.RemoveBlockAtWorldPosition(blockWorldPosition);
+            if (willLoot)
+            {
+                float randomOffsetX = Random.Range(-.25f, .25f) + .5f;
+                float randomOffsetY = Random.Range(-.25f, .25f) + .5f;
+                GameObject groundItem = Instantiate(_groundItemPrefab, new Vector3(blockWorldPositionInt.x + randomOffsetX, blockWorldPositionInt.y + randomOffsetY, 0), Quaternion.identity);
+                groundItem.GetComponent<GroundItem>().SetItem(ItemInfos.GenerateItemFromId(block.DropId));
+            }
         }
         else if (block.GetHpPercentage() <= 1f / 6f)
             Globals.BlockBreaking.GetComponent<SpriteRenderer>().sprite = BreakingSprite6;
@@ -65,6 +74,7 @@ public class BlockBreaking : MonoBehaviour
     void Start()
     {
         _spriteRenderer = Globals.BlockBreaking.GetComponent<SpriteRenderer>();
+        _groundItemPrefab = Resources.Load<GameObject>("Prefabs/GroundItem");
     }
 
     void Update()

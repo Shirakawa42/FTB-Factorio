@@ -32,7 +32,6 @@ public class PlayerInputs : MonoBehaviour
         } else {
             Debug.Log("Equipped item: null");
         }
-        // EquippedItemSpriteRenderer.sprite = item.GetComponent<SpriteRenderer>().sprite ;
     }
 
     private void Inputs()

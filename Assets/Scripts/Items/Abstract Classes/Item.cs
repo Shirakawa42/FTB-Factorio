@@ -7,20 +7,24 @@ public class Item
     public ushort Id { get; }
     public string Name { get; }
     public string Description { get; }
-    public int MaxStack { get; }
-    public int CurrentStack { get; set; }
+    public ushort MaxStack { get; }
+    public ushort CurrentStack { get; set; }
     public Sprite Sprite { get; }
     
     public virtual void LeftClick(Animation animation)
     {
-
+        animation.Play("ItemBasic");
+        Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        if (Vector2.Distance(mousePosition, Globals.Player.transform.position) > 1.5f)
+            return;
+        Globals.BlockBreaking.GetComponent<BlockBreaking>().AttackBlock(mousePosition, 1, BlockTypes.Soft, 1);
     }
     public virtual void RightClick(Animation animation)
     {
 
     }
 
-    public Item(ushort id, string name, string description, int maxStack, int currentStack, Sprite sprite)
+    public Item(ushort id, string name, string description, ushort maxStack, ushort currentStack, Sprite sprite)
     {
         Id = id;
         Name = name;

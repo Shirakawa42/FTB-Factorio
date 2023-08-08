@@ -30,28 +30,32 @@ public static class Globals
         return new Vector2Int(blockPosX, blockPosY);
     }
 
-    public static BlockStats GetSolidBlockStatsFromWorldPosition(Vector3 worldPosition)
+    public static PrimaryBlocks GetSolidBlockStatsFromWorldPosition(Vector3 worldPosition)
     {
         Vector2Int chunkPosition = GetChunkPositionFromWorldPosition(worldPosition);
         Vector2Int blockPosition = GetBlockPositionFromWorldPosition(worldPosition);
 
         if (Map.SolidChunks.ContainsKey(chunkPosition))
-            return AllBlocksStats.GetBlockStatsFromId(Map.SolidChunks[chunkPosition].Blocs[blockPosition.x + blockPosition.y * ChunkSize].Id);
-        return AllBlocksStats.GetBlockStatsFromId(BlockIds.Air);
+            return (PrimaryBlocks)ItemInfos.GetItemFromId(Map.SolidChunks[chunkPosition].Blocs[blockPosition.x + blockPosition.y * ChunkSize].Id);
+        return (PrimaryBlocks)ItemInfos.GetItemFromId(ItemIds.Air);
     }
 
-    public static void RemoveBlockAtWorldPosition(Vector3 worldPosition, bool willLoot)
+    public static void SetSolidBlockStatsAtWorldPosition(Vector3 worldPosition, ushort id)
     {
         Vector2Int chunkPosition = GetChunkPositionFromWorldPosition(worldPosition);
         Vector2Int blockPosition = GetBlockPositionFromWorldPosition(worldPosition);
 
-        if (willLoot)
-        {
-            // todo loot
-        }
+        if (Map.SolidChunks.ContainsKey(chunkPosition))
+            Map.SolidChunks[chunkPosition].AddBlock(blockPosition, id);
+    }
+
+    public static void RemoveBlockAtWorldPosition(Vector3 worldPosition)
+    {
+        Vector2Int chunkPosition = GetChunkPositionFromWorldPosition(worldPosition);
+        Vector2Int blockPosition = GetBlockPositionFromWorldPosition(worldPosition);
 
         if (Map.SolidChunks.ContainsKey(chunkPosition))
-            Map.SolidChunks[chunkPosition].AddBlock(blockPosition, BlockIds.Air);
+            Map.SolidChunks[chunkPosition].AddBlock(blockPosition, ItemIds.Air);
     }
 
     public static Vector2Int WorldPositionToVector2Int(Vector3 worldPosition)

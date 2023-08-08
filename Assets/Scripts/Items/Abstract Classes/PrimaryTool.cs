@@ -24,7 +24,7 @@ public class PrimaryTool : Item
         Globals.BlockBreaking.GetComponent<BlockBreaking>().AttackBlock(mousePosition, MiningPower, BlockType, MiningLevel);
     }
 
-    public PrimaryTool(ushort id, string name, string description, int maxStack, int currentStack, Sprite sprite, float miningPower, BlockTypes blockType, int miningLevel, int maxDurability) : base(id, name, description, maxStack, currentStack, sprite)
+    public PrimaryTool(ushort id, string name, string description, ushort maxStack, ushort currentStack, Sprite sprite, float miningPower, BlockTypes blockType, int miningLevel, int maxDurability) : base(id, name, description, maxStack, currentStack, sprite)
     {
         MiningPower = miningPower;
         BlockType = blockType;

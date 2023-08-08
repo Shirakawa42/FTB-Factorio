@@ -54,7 +54,7 @@ public class Chunk
 
     public void RemoveBlock(Vector2Int position)
     {
-        Blocs[position.x + position.y * Globals.ChunkSize] = new Block(BlockIds.Air);
+        Blocs[position.x + position.y * Globals.ChunkSize] = new Block(ItemIds.Air);
         ReloadChunk();
     }
 
@@ -120,9 +120,9 @@ public class Chunk
 
                 int blockPosition = x + y * Globals.ChunkSize;
                 ushort blockId = Blocs[blockPosition].Id;
-                ushort textureId = AllBlocksStats.GetBlockStatsFromId(blockId).TextureId;
+                ushort textureId = ((PrimaryBlocks)ItemInfos.GetItemFromId(blockId)).TextureId;
 
-                if (blockId == BlockIds.Air)
+                if (blockId == ItemIds.Air)
                 {
                     visited[x, y] = true;
                     continue;
