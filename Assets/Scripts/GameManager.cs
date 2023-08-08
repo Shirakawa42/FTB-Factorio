@@ -11,6 +11,9 @@ public class GameManager : MonoBehaviour
     {
         Globals.Player = GameObject.Find("Player");
         Globals.BlockBreaking = GameObject.Find("BlockBreaking");
+        Globals.Sprites = new Sprites();
+        Globals.Sprites.InitSprites();
+        ItemInfos.InitItems();
         _playerChunkPosition = new Vector2Int(int.MaxValue, int.MaxValue);
     }
 

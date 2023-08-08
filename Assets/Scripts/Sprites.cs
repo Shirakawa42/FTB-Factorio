@@ -4,13 +4,20 @@ using UnityEngine;
 
 public class Sprites
 {
-    public Sprite[] SpritesArray = Resources.LoadAll<Sprite>("Textures/3208");
+    private readonly Dictionary<string, Sprite> _SpritesDict = new();
+
+    public void InitSprites()
+    {
+        Sprite[] SpritesArray = Resources.LoadAll<Sprite>("Textures/3208");
+        foreach (Sprite sprite in SpritesArray)
+            _SpritesDict.Add(sprite.name, sprite);
+    }
 
     public Sprite GetSprite(string name)
     {
-        foreach (Sprite sprite in SpritesArray)
-            //if (sprite.name == id.ToString())
-                return sprite;
-        return null;
+        if (_SpritesDict.ContainsKey(name))
+            return _SpritesDict[name];
+        else
+            return null;
     }
 }

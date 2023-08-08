@@ -12,6 +12,7 @@ public static class Globals
 
     public static GameObject Player;
     public static GameObject BlockBreaking;
+    public static Sprites Sprites;
 
     public static Vector2Int GetChunkPositionFromWorldPosition(Vector3 worldPosition)
     {
