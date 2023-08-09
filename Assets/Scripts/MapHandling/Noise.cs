@@ -19,6 +19,6 @@ public static class Noise
         if (noise < 0.5f)
             return ItemIds.Air;
         else
-            return ItemIds.Stone;
+            return ItemIds.Wood;
     }
 }

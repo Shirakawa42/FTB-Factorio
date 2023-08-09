@@ -13,6 +13,7 @@ public class GameManager : MonoBehaviour
         Globals.BlockBreaking = GameObject.Find("BlockBreaking");
         Globals.Sprites = new Sprites();
         Globals.Sprites.InitSprites();
+        Globals.TreeSpritePool = GetComponent<TreeSpritePool>();
         ItemInfos.InitItems();
         _playerChunkPosition = new Vector2Int(int.MaxValue, int.MaxValue);
     }

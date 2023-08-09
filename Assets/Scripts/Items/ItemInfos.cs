@@ -19,7 +19,8 @@ public static class ItemInfos
             { ItemIds.Stone, new PrimaryBlocks(ItemIds.Stone, "Stone", "A Stone", 64, 1, Globals.Sprites.GetSprite("3208_372"), ItemIds.Stone, TextureIds.Stone, BlockTypes.Hard, true, false, 16, 16, 2) },
             { ItemIds.Dirt, new PrimaryBlocks(ItemIds.Dirt, "Dirt", "A Dirt", 64, 1, Globals.Sprites.GetSprite("3208_162"), ItemIds.Dirt, TextureIds.Dirt, BlockTypes.Soft, true, false, 4, 4, 1) },
             { ItemIds.Grass, new PrimaryBlocks(ItemIds.Grass, "Grass", "A Grass", 64, 1, Globals.Sprites.GetSprite("3208_686"), ItemIds.Grass, TextureIds.GrassTop, BlockTypes.Soft, true, false, 4, 4, 1) },
-            { ItemIds.Air, new PrimaryBlocks(ItemIds.Air, "Air", "Air", 64, 1, null, ItemIds.Air, 0, BlockTypes.Gas, false, false, 0, 0, 0)}
+            { ItemIds.Air, new PrimaryBlocks(ItemIds.Air, "Air", "Air", 64, 1, null, ItemIds.Air, 0, BlockTypes.Gas, false, false, 0, 0, 0)},
+            { ItemIds.Wood, new PrimaryBlocks(ItemIds.Wood, "Wood", "A Wood", 64, 1, Globals.Sprites.GetSprite("3208_429"), ItemIds.Wood, TextureIds.WoodTop, BlockTypes.Wood, true, false, 12, 12, 1) },
         };
     }
 

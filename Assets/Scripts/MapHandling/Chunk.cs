@@ -34,6 +34,7 @@ public class Chunk
     private MeshFilter _meshFilter;
     private GameObject _chunkGameObject;
     private Mesh _mesh;
+    private readonly Dictionary<int, GameObject> _trees = new();
 
     public Chunk(Vector2Int position, WorldsIds worldId, ChunkTypes chunkType)
     {
@@ -52,9 +53,23 @@ public class Chunk
         GenerateMesh();
     }
 
+    private void CheckAndRemoveTree(int index)
+    {
+        if (Blocs[index].Id == ItemIds.Wood && ChunkType == ChunkTypes.Solid)
+        {
+            if (_trees.ContainsKey(index))
+            {
+                Globals.TreeSpritePool.ReturnTree(_trees[index]);
+                _trees.Remove(index);
+            }
+        }
+    }
+
     public void RemoveBlock(Vector2Int position)
     {
-        Blocs[position.x + position.y * Globals.ChunkSize] = new Block(ItemIds.Air);
+        int index = position.x + position.y * Globals.ChunkSize;
+        CheckAndRemoveTree(index);
+        Blocs[index] = new Block(ItemIds.Air);
         ReloadChunk();
     }
 
@@ -90,6 +105,15 @@ public class Chunk
             _meshRenderer.material = Resources.Load<Material>("Materials/BlockMaterialSolid");
     }
 
+    private void CheckAndAddTree(int index, Vector2Int localPosition)
+    {
+        if (Blocs[index].Id == ItemIds.Wood)
+        {
+            GameObject tree = Globals.TreeSpritePool.GetTree(Random.Range(0, Globals.NbTreeSprites), new Vector3(localPosition.x + .5f, localPosition.y + .5f, 0), _chunkGameObject.transform);
+            _trees.Add(index, tree);
+        }
+    }
+
     private void GenerateBlocks()
     {
         for (int i = 0; i < Blocs.Length; i++)
@@ -98,7 +122,10 @@ public class Chunk
             if (ChunkType == ChunkTypes.Floor)
                 Blocs[i] = new Block(Noise.GetFloorBlockAtWorldPosition(worldPosition, WorldId));
             else if (ChunkType == ChunkTypes.Solid)
+            {
                 Blocs[i] = new Block(Noise.GetSolidBlockAtWorldPosition(worldPosition, WorldId));
+                CheckAndAddTree(i, new Vector2Int(i % Globals.ChunkSize, i / Globals.ChunkSize));
+            }
         }
     }
 

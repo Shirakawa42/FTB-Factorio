@@ -9,11 +9,12 @@ public static class Globals
     public const int Seed = 56231;
     public const int ToolbarSlots = 9;
     public const int InventorySlots = 27;
+    public const int NbTreeSprites = 3;
 
     public static GameObject Player;
     public static GameObject BlockBreaking;
     public static Sprites Sprites;
-
+    public static TreeSpritePool TreeSpritePool;
     public static Vector2Int GetChunkPositionFromWorldPosition(Vector3 worldPosition)
     {
         return new Vector2Int(Mathf.FloorToInt(worldPosition.x / ChunkSize), Mathf.FloorToInt(worldPosition.y / ChunkSize));
@@ -55,7 +56,7 @@ public static class Globals
         Vector2Int blockPosition = GetBlockPositionFromWorldPosition(worldPosition);
 
         if (Map.SolidChunks.ContainsKey(chunkPosition))
-            Map.SolidChunks[chunkPosition].AddBlock(blockPosition, ItemIds.Air);
+            Map.SolidChunks[chunkPosition].RemoveBlock(blockPosition);
     }
 
     public static Vector2Int WorldPositionToVector2Int(Vector3 worldPosition)

@@ -10,4 +10,5 @@ public static class ItemIds
     public const ushort Grass = 7;
     public const ushort Sand = 8;
     public const ushort Air = 9;
+    public const ushort Wood = 10;
 }

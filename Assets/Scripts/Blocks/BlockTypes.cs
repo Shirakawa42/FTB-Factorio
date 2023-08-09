@@ -7,5 +7,6 @@ public enum BlockTypes
     Hard,
     Soft,
     Liquid,
+    Wood,
     Gas
 }
