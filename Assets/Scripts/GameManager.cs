@@ -9,6 +9,8 @@ public class GameManager : MonoBehaviour
     private WorldsIds _oldWorldId = WorldsIds.overworld;
 
     private GameObject _worlds;
+    private float _DayLight = 1.0f;
+    private bool _DayLightIncreasing = false;
 
     void Awake()
     {
@@ -18,6 +20,8 @@ public class GameManager : MonoBehaviour
         Globals.CurrentWorld = _worlds.transform.Find("overworld").gameObject;
         Globals.ChunkMaterialFloor = Resources.Load<Material>("Materials/BlockMaterialFloor");
         Globals.ChunkMaterialSolid = Resources.Load<Material>("Materials/BlockMaterialSolid");
+        Globals.ChunkMaterialFloor.SetFloat("_Daylight", 1.0f);
+        Globals.ChunkMaterialSolid.SetFloat("_Daylight", 1.0f);
         Globals.Sprites = new Sprites();
         Globals.Sprites.InitSprites();
         Globals.TreeSpritePool = GetComponent<TreeSpritePool>();
@@ -55,6 +59,8 @@ public class GameManager : MonoBehaviour
         {
             DisableWorlds();
             Globals.CurrentWorld = _worlds.transform.Find("overworld").gameObject;
+            Globals.ChunkMaterialFloor.SetFloat("_Daylight", 1.0f);
+            Globals.ChunkMaterialSolid.SetFloat("_Daylight", 1.0f);
             Globals.CurrentWorld.SetActive(true);
             Globals.CurrentWorldId = WorldsIds.overworld;
         }
@@ -62,8 +68,37 @@ public class GameManager : MonoBehaviour
         {
             DisableWorlds();
             Globals.CurrentWorld = _worlds.transform.Find("low_depth").gameObject;
+            Globals.ChunkMaterialFloor.SetFloat("_Daylight", 0.0f);
+            Globals.ChunkMaterialSolid.SetFloat("_Daylight", 0.0f);
             Globals.CurrentWorld.SetActive(true);
             Globals.CurrentWorldId = WorldsIds.low_depth;
         }
+
+        if (Globals.CurrentWorldId == WorldsIds.overworld)
+            UpdateDayLight();
+    }
+
+    void UpdateDayLight()
+    {
+        if (_DayLightIncreasing)
+        {
+            _DayLight += Time.deltaTime * 0.1f;
+            if (_DayLight >= 1.0f)
+            {
+                _DayLight = 1.0f;
+                _DayLightIncreasing = false;
+            }
+        }
+        else
+        {
+            _DayLight -= Time.deltaTime * 0.1f;
+            if (_DayLight <= 0.0f)
+            {
+                _DayLight = 0.0f;
+                _DayLightIncreasing = true;
+            }
+        }
+        Globals.ChunkMaterialFloor.SetFloat("_Daylight", _DayLight);
+        Globals.ChunkMaterialSolid.SetFloat("_Daylight", _DayLight);
     }
 }

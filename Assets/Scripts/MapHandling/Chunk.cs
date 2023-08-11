@@ -1,14 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 
 public struct Block
 {
     public ushort Id;
+    public byte Light;
 
-    public Block(ushort id)
+    public Block(ushort id, byte light)
     {
         Id = id;
+        Light = light;
     }
 }
 
@@ -69,13 +72,13 @@ public class Chunk
     {
         int index = position.x + position.y * Globals.ChunkSize;
         CheckAndRemoveTree(index);
-        Blocs[index] = new Block(ItemIds.Air);
+        Blocs[index] = new Block(ItemIds.Air, 16);
         ReloadChunk();
     }
 
     public void AddBlock(Vector2Int position, ushort blockId)
     {
-        Blocs[position.x + position.y * Globals.ChunkSize] = new Block(blockId);
+        Blocs[position.x + position.y * Globals.ChunkSize] = new Block(blockId, Blocs[position.x + position.y * Globals.ChunkSize].Light);
         ReloadChunk();
     }
 
@@ -109,21 +112,22 @@ public class Chunk
     {
         if (Blocs[index].Id == ItemIds.Wood)
         {
-            GameObject tree = Globals.TreeSpritePool.GetTree(Random.Range(0, Globals.NbTreeSprites), new Vector3(localPosition.x + .5f, localPosition.y + .5f, 0), _chunkGameObject.transform);
+            GameObject tree = Globals.TreeSpritePool.GetTree(UnityEngine.Random.Range(0, Globals.NbTreeSprites), new Vector3(localPosition.x + .5f, localPosition.y + .5f, 0), _chunkGameObject.transform);
             _trees.Add(index, tree);
         }
     }
 
     private void GenerateBlocks()
     {
+        byte light = 1;
         for (int i = 0; i < Blocs.Length; i++)
         {
             Vector2Int worldPosition = new(Position.x * Globals.ChunkSize + i % Globals.ChunkSize, Position.y * Globals.ChunkSize + i / Globals.ChunkSize);
             if (ChunkType == ChunkTypes.Floor)
-                Blocs[i] = new Block(Noise.GetFloorBlockAtWorldPosition(worldPosition, WorldId));
+                Blocs[i] = new Block(Noise.GetFloorBlockAtWorldPosition(worldPosition, WorldId), light);
             else if (ChunkType == ChunkTypes.Solid)
             {
-                Blocs[i] = new Block(Noise.GetSolidBlockAtWorldPosition(worldPosition, WorldId));
+                Blocs[i] = new Block(Noise.GetSolidBlockAtWorldPosition(worldPosition, WorldId), light);
                 CheckAndAddTree(i, new Vector2Int(i % Globals.ChunkSize, i / Globals.ChunkSize));
             }
         }
@@ -148,6 +152,7 @@ public class Chunk
                 int blockPosition = x + y * Globals.ChunkSize;
                 ushort blockId = Blocs[blockPosition].Id;
                 ushort textureId = ((PrimaryBlocks)ItemInfos.GetItemFromId(blockId)).TextureId;
+                byte lightValue = Blocs[blockPosition].Light;
 
                 if (blockId == ItemIds.Air)
                 {
@@ -159,6 +164,7 @@ public class Chunk
 
                 while (x + width < Globals.ChunkSize &&
                         Blocs[x + width + y * Globals.ChunkSize].Id == blockId &&
+                        Blocs[x + width + y * Globals.ChunkSize].Light == lightValue &&
                         !visited[x + width, y])
                 {
                     width++;
@@ -170,6 +176,7 @@ public class Chunk
                     for (int i = 0; i < width; i++)
                     {
                         if (Blocs[x + i + (y + height) * Globals.ChunkSize].Id != blockId ||
+                            Blocs[x + i + (y + height) * Globals.ChunkSize].Light != lightValue ||
                             visited[x + i, y + height])
                         {
                             validHeight = false;
@@ -216,10 +223,10 @@ public class Chunk
 
                 _uvts.AddRange(new Vector2[]
                 {
-                    new Vector2(textureId, 0f),
-                    new Vector2(textureId, 0f),
-                    new Vector2(textureId, 0f),
-                    new Vector2(textureId, 0f)
+                    new Vector2(textureId, lightValue),
+                    new Vector2(textureId, lightValue),
+                    new Vector2(textureId, lightValue),
+                    new Vector2(textureId, lightValue)
                 });
 
             }

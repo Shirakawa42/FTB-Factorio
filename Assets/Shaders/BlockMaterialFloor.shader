@@ -25,9 +25,11 @@ Shader "Custom/BlockMaterialFloor"
                 float2 uv : TEXCOORD0;
                 float4 vertex : SV_POSITION;
                 int textureIndex : TEXCOORD1;
+                float light : TEXCOORD2;
             };
 
             UNITY_DECLARE_TEX2DARRAY(_MainTex);
+            float _Daylight;
 
             v2f vert (appdata v)
             {
@@ -35,13 +37,14 @@ Shader "Custom/BlockMaterialFloor"
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = v.uv;
                 o.textureIndex = (int)v.uv2.x;
+                o.light = v.uv2.y;
                 return o;
             }
 
             fixed4 frag (v2f i) : SV_Target
             {
                 float2 uvRepeat = fmod(i.uv, 1.0);
-                return UNITY_SAMPLE_TEX2DARRAY(_MainTex, float3(uvRepeat, i.textureIndex));
+                return UNITY_SAMPLE_TEX2DARRAY(_MainTex, float3(uvRepeat, i.textureIndex)) * max(_Daylight, (i.light / 255.0));
             }
             ENDCG
         }

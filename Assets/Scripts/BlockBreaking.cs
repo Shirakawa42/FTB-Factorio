@@ -13,6 +13,7 @@ public class BlockBreaking : MonoBehaviour
 
     private Vector2Int _lastAttackedBlockPosition = new(0, 0);
     private PrimaryBlocks _lastAttackedBlock = null;
+    private WorldsIds _lastAttackedBlockWorldId = WorldsIds.overworld;
     private float _timeBeforeReset = 1.5f;
     private const float _timeBeforeResetMax = 1.5f;
     private SpriteRenderer _spriteRenderer;
@@ -28,11 +29,12 @@ public class BlockBreaking : MonoBehaviour
         if (block.Id == ItemIds.Air)
             return;
 
-        if (_lastAttackedBlock != null && _lastAttackedBlockPosition != blockWorldPositionInt)
+        if (_lastAttackedBlock != null && (_lastAttackedBlockPosition != blockWorldPositionInt || _lastAttackedBlockWorldId != worldId))
             _lastAttackedBlock.Hp = _lastAttackedBlock.HpMax;
 
         _lastAttackedBlockPosition = blockWorldPositionInt;
         _lastAttackedBlock = block;
+        _lastAttackedBlockWorldId = worldId;
         _timeBeforeReset = _timeBeforeResetMax;
         if (blockType != block.BlockType || miningLevel < block.SolidityLevel)
         {
