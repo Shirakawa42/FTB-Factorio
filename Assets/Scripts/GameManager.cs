@@ -21,6 +21,7 @@ public class GameManager : MonoBehaviour
         Globals.TreeSpritePool = GetComponent<TreeSpritePool>();
         ItemInfos.InitItems();
         _playerChunkPosition = new Vector2Int(int.MaxValue, int.MaxValue);
+        Globals.Canvas = GameObject.Find("Canvas");
     }
 
     private void LoadAroundPlayer()

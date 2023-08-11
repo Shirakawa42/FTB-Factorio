@@ -11,6 +11,8 @@ public class PlayerInputs : MonoBehaviour
     private const float _cooldownMaxLeft = 0.1f;
     private float _cooldownRight = 0f;
     private float _cooldownLeft = 0f;
+    private bool _inventoryStatus = false;
+    private Inventory _inventory;
 
     void Start()
     {
@@ -18,6 +20,8 @@ public class PlayerInputs : MonoBehaviour
         _animation = EquippedItemSpriteRenderer.GetComponent<Animation>();
 
         EquippedItem = ItemInfos.GenerateItemFromId(ItemIds.Pickaxe_Iron);
+
+        _inventory = Globals.Canvas.GetComponent<Initializor>().Inventory.GetComponent<Inventory>();
     }
 
     void Update()
@@ -50,6 +54,19 @@ public class PlayerInputs : MonoBehaviour
         {
             EquippedItem.RightClick(_animation);
             _cooldownRight = _cooldownMaxRight;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Tab)) {
+            if (_inventoryStatus)
+                _inventory.CloseInventory();
+            else
+                _inventory.OpenInventory();
+            _inventoryStatus = !_inventoryStatus;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Escape)) {
+            _inventoryStatus = false;
+            _inventory.CloseInventory();
         }
     }
 }

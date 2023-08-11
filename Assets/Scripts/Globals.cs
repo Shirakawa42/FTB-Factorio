@@ -15,6 +15,7 @@ public static class Globals
     public static GameObject CurrentWorld;
     public static GameObject Player;
     public static GameObject BlockBreaking;
+    public static GameObject Canvas;
     public static Sprites Sprites;
     public static TreeSpritePool TreeSpritePool;
     public static Vector2Int GetChunkPositionFromWorldPosition(Vector3 worldPosition)

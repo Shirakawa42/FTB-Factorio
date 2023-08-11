@@ -4,11 +4,13 @@ using UnityEngine;
 
 public class Initializor : MonoBehaviour
 {
+    public GameObject Inventory;
     private GameObject _Toolbar;
 
     private GameObject _SlotPrefab;
     private GameObject _HighlightPrefab;
     private GameObject _ToolbarPrefab;
+    private GameObject _InventoryPrefab;
 
     // Start is called before the first frame update
     void Start()
@@ -16,8 +18,12 @@ public class Initializor : MonoBehaviour
         _SlotPrefab = Resources.Load<GameObject>("Prefabs/Slot");
         _HighlightPrefab = Resources.Load<GameObject>("Prefabs/Highlight");
         _ToolbarPrefab = Resources.Load<GameObject>("Prefabs/Toolbar");
+        _InventoryPrefab = Resources.Load<GameObject>("Prefabs/Inventory");
 
         _Toolbar = Instantiate(_ToolbarPrefab, transform);
+        Inventory = Instantiate(_InventoryPrefab, transform);
+
+        Inventory.GetComponent<Inventory>().Init(Inventory);
 
         InitSlots();
 
@@ -41,5 +47,18 @@ public class Initializor : MonoBehaviour
             toolbarSlots.Add(_slot.GetComponent<Slot>());
             toolbarSlots[i].Init();
         }
+
+        List<Slot> inventorySlots = Inventory.GetComponent<Inventory>().inventorySlots;
+        for (int i = 0; i < Globals.InventorySlots; i++)
+        {
+            GameObject _slot = Instantiate(_SlotPrefab, Inventory.transform);
+            _slot.name = "Slot " + i;
+            _slot.transform.SetParent(Inventory.transform);
+            _slot.transform.localPosition = new Vector3(spacing / 2 + leftBorderX + spacing * i, 0, 0);
+            inventorySlots.Add(_slot.GetComponent<Slot>());
+            inventorySlots[i].Init();
+        }
+
+        Inventory.GetComponent<Inventory>().TMPAddItemsToInventory();
     }
 }
