@@ -23,6 +23,7 @@ public class Slot : MonoBehaviour
             return;
         }
 
+        Debug.Log("Setting item " + item.Name + " to slot " + gameObject.name + " stack: " + item.CurrentStack);
         _item = item;
         _Image.sprite = item.Sprite;
     }

@@ -25,8 +25,19 @@ public class GroundItem : MonoBehaviour
         Destroy(gameObject);
     }
 
+    void OnTriggerEnter2D(Collider2D col)
+    {
+        Debug.Log("Player picked up ");
+        if (col.tag == "Player") {
+            if (InventoryHelper.AddItemToPlayer(_item))
+                Destroy();
+        }
+    }
+
     void Update()
     {
         transform.Rotate(0, 0, _rotateSpeed * Time.deltaTime);
+
+
     }
 }

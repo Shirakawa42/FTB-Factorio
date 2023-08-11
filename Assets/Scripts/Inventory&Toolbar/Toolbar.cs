@@ -15,12 +15,12 @@ public class Toolbar : MonoBehaviour
     {
         _playerInputs = Globals.Player.GetComponent<PlayerInputs>();
 
-        AddItemToSlot(ItemInfos.GenerateItemFromId(ItemIds.Pickaxe_Wood), 0);
-        AddItemToSlot(ItemInfos.GenerateItemFromId(ItemIds.Pickaxe_Stone), 1);
-        AddItemToSlot(ItemInfos.GenerateItemFromId(ItemIds.Pickaxe_Iron), 2);
-        AddItemToSlot(ItemInfos.GenerateItemFromId(ItemIds.Pickaxe_Gold), 3);
-        AddItemToSlot(ItemInfos.GenerateItemFromId(ItemIds.Pickaxe_Diamond), 4);
-        AddItemToSlot(ItemInfos.GenerateItemFromId(ItemIds.Stone), 5);
+        AddItemToFirstEmptySlot(ItemInfos.GenerateItemFromId(ItemIds.Pickaxe_Wood));
+        AddItemToFirstEmptySlot(ItemInfos.GenerateItemFromId(ItemIds.Pickaxe_Stone));
+        AddItemToFirstEmptySlot(ItemInfos.GenerateItemFromId(ItemIds.Pickaxe_Iron));
+        AddItemToFirstEmptySlot(ItemInfos.GenerateItemFromId(ItemIds.Pickaxe_Gold));
+        AddItemToFirstEmptySlot(ItemInfos.GenerateItemFromId(ItemIds.Pickaxe_Diamond));
+        AddItemToFirstEmptySlot(ItemInfos.GenerateItemFromId(ItemIds.Stone));
 
         SelectSlot(0);
     }
@@ -37,6 +37,35 @@ public class Toolbar : MonoBehaviour
 
         toolbarSlots[slot].SetItem(item);
         itemInSlots[slot] = item;
+    }
+
+    public bool AddItemToExistingSlot(Item item) {
+        for (ushort i = 0; i < Globals.ToolbarSlots; i++)
+        {
+            if (itemInSlots[i] != null && itemInSlots[i].Id == item.Id && itemInSlots[i].CurrentStack + item.CurrentStack <= itemInSlots[i].MaxStack)
+            {
+                itemInSlots[i].CurrentStack += item.CurrentStack;
+                toolbarSlots[i].SetItem(itemInSlots[i]);
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public bool AddItemToFirstEmptySlot(Item item)
+    {
+        for (ushort i = 0; i < Globals.ToolbarSlots; i++)
+        {
+            if (itemInSlots[i] == null)
+            {
+                AddItemToSlot(item, i);
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private void SelectSlot(ushort index)
