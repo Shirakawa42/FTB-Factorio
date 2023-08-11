@@ -17,9 +17,9 @@ public class PrimaryBlocks : Item
     {
         Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         float distance = Vector2.Distance(mousePosition, Globals.Player.transform.position);
-        if (distance > 4f || distance < 1f || Globals.GetSolidBlockStatsFromWorldPosition(mousePosition).Id != ItemIds.Air)
+        if (distance > 4f || distance < 1f || Globals.GetSolidBlockStatsFromWorldPosition(mousePosition, Globals.CurrentWorldId).Id != ItemIds.Air)
             return;
-        Globals.SetSolidBlockStatsAtWorldPosition(mousePosition, Id);
+        Globals.SetSolidBlockStatsAtWorldPosition(mousePosition, Id, Globals.CurrentWorldId);
     }
 
     public PrimaryBlocks(ushort id, string name, string description, ushort maxStack, ushort currentStack, Sprite sprite, ushort dropId, ushort textureId, BlockTypes blockType, bool isSolid, bool isTransparent, short hp, short hpMax, ushort solidityLevel) : base(id, name, description, maxStack, currentStack, sprite)

@@ -6,6 +6,40 @@ public static class Noise
 {
     public static ushort GetFloorBlockAtWorldPosition(Vector2Int position, WorldsIds worldId)
     {
+        if (worldId == WorldsIds.overworld)
+            return OverWorldFloorGenerator(position);
+        else if (worldId == WorldsIds.low_depth)
+            return LowDepthFloorGenerator(position);
+        else
+            return ItemIds.Air;
+    }
+
+    public static ushort GetSolidBlockAtWorldPosition(Vector2Int position, WorldsIds worldId)
+    {
+        if (worldId == WorldsIds.overworld)
+            return OverWorldSolidGenerator(position);
+        else if (worldId == WorldsIds.low_depth)
+            return LowDepthSolidGenerator(position);
+        else
+            return ItemIds.Air;
+    }
+
+    private static ushort LowDepthFloorGenerator(Vector2Int position)
+    {
+        return ItemIds.Stone;
+    }
+
+    private static ushort LowDepthSolidGenerator(Vector2Int position)
+    {
+        float noise = Mathf.PerlinNoise(position.x / 5f + Globals.Seed, position.y / 5f + Globals.Seed);
+        if (noise < 0.5f)
+            return ItemIds.Stone;
+        else
+            return ItemIds.Air;
+    }
+
+    private static ushort OverWorldFloorGenerator(Vector2Int position)
+    {
         float noise = Mathf.PerlinNoise(position.x / 10f + Globals.Seed, position.y / 10f + Globals.Seed);
         if (noise < 0.5f)
             return ItemIds.Grass;
@@ -13,15 +47,7 @@ public static class Noise
             return ItemIds.Stone;
     }
 
-    public static ushort GetSolidBlockAtWorldPosition(Vector2Int position, WorldsIds worldId)
-    {
-        if (worldId == WorldsIds.overworld)
-            return OverWorldGenerator(position);
-        else
-            return ItemIds.Air;
-    }
-
-    private static ushort OverWorldGenerator(Vector2Int position)
+    private static ushort OverWorldSolidGenerator(Vector2Int position)
     {
         float noise = Mathf.PerlinNoise(position.x / 5f + Globals.Seed, position.y / 5f + Globals.Seed);
         if (noise < 0.5f)

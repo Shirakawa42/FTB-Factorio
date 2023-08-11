@@ -11,6 +11,8 @@ public static class Globals
     public const int InventorySlots = 27;
     public const int NbTreeSprites = 3;
 
+    public static WorldsIds CurrentWorldId = WorldsIds.overworld;
+    public static GameObject CurrentWorld;
     public static GameObject Player;
     public static GameObject BlockBreaking;
     public static Sprites Sprites;
@@ -31,32 +33,35 @@ public static class Globals
         return new Vector2Int(blockPosX, blockPosY);
     }
 
-    public static PrimaryBlocks GetSolidBlockStatsFromWorldPosition(Vector3 worldPosition)
+    public static PrimaryBlocks GetSolidBlockStatsFromWorldPosition(Vector3 worldPosition, WorldsIds worldId)
     {
         Vector2Int chunkPosition = GetChunkPositionFromWorldPosition(worldPosition);
         Vector2Int blockPosition = GetBlockPositionFromWorldPosition(worldPosition);
 
-        if (Map.SolidChunks.ContainsKey(chunkPosition))
-            return (PrimaryBlocks)ItemInfos.GetItemFromId(Map.SolidChunks[chunkPosition].Blocs[blockPosition.x + blockPosition.y * ChunkSize].Id);
+        MapKey key = new(chunkPosition, worldId);
+        if (Map.SolidChunks.ContainsKey(key))
+            return (PrimaryBlocks)ItemInfos.GetItemFromId(Map.SolidChunks[key].Blocs[blockPosition.x + blockPosition.y * ChunkSize].Id);
         return (PrimaryBlocks)ItemInfos.GetItemFromId(ItemIds.Air);
     }
 
-    public static void SetSolidBlockStatsAtWorldPosition(Vector3 worldPosition, ushort id)
+    public static void SetSolidBlockStatsAtWorldPosition(Vector3 worldPosition, ushort id, WorldsIds worldId)
     {
         Vector2Int chunkPosition = GetChunkPositionFromWorldPosition(worldPosition);
         Vector2Int blockPosition = GetBlockPositionFromWorldPosition(worldPosition);
 
-        if (Map.SolidChunks.ContainsKey(chunkPosition))
-            Map.SolidChunks[chunkPosition].AddBlock(blockPosition, id);
+        MapKey key = new(chunkPosition, worldId);
+        if (Map.SolidChunks.ContainsKey(key))
+            Map.SolidChunks[key].AddBlock(blockPosition, id);
     }
 
-    public static void RemoveBlockAtWorldPosition(Vector3 worldPosition)
+    public static void RemoveBlockAtWorldPosition(Vector3 worldPosition, WorldsIds worldId)
     {
         Vector2Int chunkPosition = GetChunkPositionFromWorldPosition(worldPosition);
         Vector2Int blockPosition = GetBlockPositionFromWorldPosition(worldPosition);
 
-        if (Map.SolidChunks.ContainsKey(chunkPosition))
-            Map.SolidChunks[chunkPosition].RemoveBlock(blockPosition);
+        MapKey key = new(chunkPosition, worldId);
+        if (Map.SolidChunks.ContainsKey(key))
+            Map.SolidChunks[key].RemoveBlock(blockPosition);
     }
 
     public static Vector2Int WorldPositionToVector2Int(Vector3 worldPosition)

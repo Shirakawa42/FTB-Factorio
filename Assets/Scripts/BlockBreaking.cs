@@ -18,12 +18,12 @@ public class BlockBreaking : MonoBehaviour
     private SpriteRenderer _spriteRenderer;
     private GameObject _groundItemPrefab;
 
-    public void AttackBlock(Vector3 blockWorldPosition, float miningPower, BlockTypes blockType, int miningLevel)
+    public void AttackBlock(Vector3 blockWorldPosition, float miningPower, BlockTypes blockType, int miningLevel, WorldsIds worldId)
     {
         bool willLoot = true;
         Vector2Int blockWorldPositionInt = Globals.WorldPositionToVector2Int(blockWorldPosition);
 
-        PrimaryBlocks block = Globals.GetSolidBlockStatsFromWorldPosition(blockWorldPosition);
+        PrimaryBlocks block = Globals.GetSolidBlockStatsFromWorldPosition(blockWorldPosition, worldId);
 
         if (block.Id == ItemIds.Air)
             return;
@@ -48,12 +48,13 @@ public class BlockBreaking : MonoBehaviour
         {
             _lastAttackedBlock.Hp = _lastAttackedBlock.HpMax;
             Globals.BlockBreaking.GetComponent<SpriteRenderer>().sprite = null;
-            Globals.RemoveBlockAtWorldPosition(blockWorldPosition);
+            Globals.RemoveBlockAtWorldPosition(blockWorldPosition, worldId);
             if (willLoot)
             {
                 float randomOffsetX = Random.Range(-.25f, .25f) + .5f;
                 float randomOffsetY = Random.Range(-.25f, .25f) + .5f;
                 GameObject groundItem = Instantiate(_groundItemPrefab, new Vector3(blockWorldPositionInt.x + randomOffsetX, blockWorldPositionInt.y + randomOffsetY, 0), Quaternion.identity);
+                groundItem.transform.SetParent(Globals.CurrentWorld.transform.Find("grounditems"));
                 groundItem.GetComponent<GroundItem>().SetItem(ItemInfos.GenerateItemFromId(block.DropId));
             }
         }

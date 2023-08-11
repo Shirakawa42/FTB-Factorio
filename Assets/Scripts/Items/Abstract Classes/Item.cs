@@ -17,7 +17,7 @@ public class Item
         Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         if (Vector2.Distance(mousePosition, Globals.Player.transform.position) > 1.5f)
             return;
-        Globals.BlockBreaking.GetComponent<BlockBreaking>().AttackBlock(mousePosition, 1, BlockTypes.Soft, 1);
+        Globals.BlockBreaking.GetComponent<BlockBreaking>().AttackBlock(mousePosition, 1, BlockTypes.Soft, 1, Globals.CurrentWorldId);
     }
     public virtual void RightClick(Animation animation)
     {

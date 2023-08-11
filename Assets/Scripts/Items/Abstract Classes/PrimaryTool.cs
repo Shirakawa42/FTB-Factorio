@@ -21,7 +21,7 @@ public class PrimaryTool : Item
         Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         if (Vector2.Distance(mousePosition, Globals.Player.transform.position) > 1.5f)
             return;
-        Globals.BlockBreaking.GetComponent<BlockBreaking>().AttackBlock(mousePosition, MiningPower, BlockType, MiningLevel);
+        Globals.BlockBreaking.GetComponent<BlockBreaking>().AttackBlock(mousePosition, MiningPower, BlockType, MiningLevel, Globals.CurrentWorldId);
     }
 
     public PrimaryTool(ushort id, string name, string description, ushort maxStack, ushort currentStack, Sprite sprite, float miningPower, BlockTypes blockType, int miningLevel, int maxDurability) : base(id, name, description, maxStack, currentStack, sprite)
