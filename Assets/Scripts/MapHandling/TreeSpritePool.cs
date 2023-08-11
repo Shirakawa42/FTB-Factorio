@@ -7,6 +7,7 @@ public class TreeSpritePool : MonoBehaviour
     private Sprite[] _sprites;
     private readonly Stack<GameObject> _treePool = new();
     private Transform _parent;
+    private int _treeCount = 0;
 
     void Awake()
     {
@@ -19,7 +20,10 @@ public class TreeSpritePool : MonoBehaviour
             tree.transform.SetParent(_parent);
             tree.AddComponent<SpriteRenderer>();
             tree.SetActive(false);
+            tree.GetComponent<SpriteRenderer>().sortingLayerName = "Tree";
+            tree.GetComponent<SpriteRenderer>().sortingOrder = _treeCount;
             _treePool.Push(tree);
+            _treeCount++;
         }
     }
 
@@ -30,6 +34,9 @@ public class TreeSpritePool : MonoBehaviour
         {
             tree = new("Tree");
             tree.AddComponent<SpriteRenderer>();
+            tree.GetComponent<SpriteRenderer>().sortingLayerName = "Tree";
+            tree.GetComponent<SpriteRenderer>().sortingOrder = _treeCount;
+            _treeCount++;
         }
         else
             tree = _treePool.Pop();
