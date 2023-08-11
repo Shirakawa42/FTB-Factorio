@@ -100,9 +100,9 @@ public class Chunk
         _meshFilter.mesh = _mesh;
         _meshRenderer = _chunkGameObject.AddComponent<MeshRenderer>();
         if (ChunkType == ChunkTypes.Floor)
-            _meshRenderer.material = Resources.Load<Material>("Materials/BlockMaterialFloor");
+            _meshRenderer.material = Globals.ChunkMaterialFloor;
         else if (ChunkType == ChunkTypes.Solid)
-            _meshRenderer.material = Resources.Load<Material>("Materials/BlockMaterialSolid");
+            _meshRenderer.material = Globals.ChunkMaterialSolid;
     }
 
     private void CheckAndAddTree(int index, Vector2Int localPosition)

@@ -31,8 +31,8 @@ public static class Noise
 
     private static ushort LowDepthSolidGenerator(Vector2Int position)
     {
-        float noise = Mathf.PerlinNoise(position.x / 5f + Globals.Seed, position.y / 5f + Globals.Seed);
-        if (noise < 0.5f)
+        float noise = Mathf.PerlinNoise(position.x / 6f + Globals.Seed*2, position.y / 6f + Globals.Seed*2);
+        if (noise < 0.6f)
             return ItemIds.Stone;
         else
             return ItemIds.Air;

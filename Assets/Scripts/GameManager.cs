@@ -16,6 +16,8 @@ public class GameManager : MonoBehaviour
         Globals.BlockBreaking = GameObject.Find("BlockBreaking");
         _worlds = GameObject.Find("Worlds");
         Globals.CurrentWorld = _worlds.transform.Find("overworld").gameObject;
+        Globals.ChunkMaterialFloor = Resources.Load<Material>("Materials/BlockMaterialFloor");
+        Globals.ChunkMaterialSolid = Resources.Load<Material>("Materials/BlockMaterialSolid");
         Globals.Sprites = new Sprites();
         Globals.Sprites.InitSprites();
         Globals.TreeSpritePool = GetComponent<TreeSpritePool>();
