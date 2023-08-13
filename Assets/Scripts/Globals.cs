@@ -20,6 +20,7 @@ public static class Globals
     public static TreeSpritePool TreeSpritePool;
     public static Material ChunkMaterialFloor;
     public static Material ChunkMaterialSolid;
+    public static Material SpritesMaterial;
     public static Vector2Int GetChunkPositionFromWorldPosition(Vector3 worldPosition)
     {
         return new Vector2Int(Mathf.FloorToInt(worldPosition.x / ChunkSize), Mathf.FloorToInt(worldPosition.y / ChunkSize));

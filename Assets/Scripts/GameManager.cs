@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -20,8 +21,10 @@ public class GameManager : MonoBehaviour
         Globals.CurrentWorld = _worlds.transform.Find("overworld").gameObject;
         Globals.ChunkMaterialFloor = Resources.Load<Material>("Materials/BlockMaterialFloor");
         Globals.ChunkMaterialSolid = Resources.Load<Material>("Materials/BlockMaterialSolid");
+        Globals.SpritesMaterial = Resources.Load<Material>("Materials/Sprites");
         Globals.ChunkMaterialFloor.SetFloat("_Daylight", 1.0f);
         Globals.ChunkMaterialSolid.SetFloat("_Daylight", 1.0f);
+        Globals.SpritesMaterial.SetFloat("_Daylight", 1.0f);
         Globals.Sprites = new Sprites();
         Globals.Sprites.InitSprites();
         Globals.TreeSpritePool = GetComponent<TreeSpritePool>();
@@ -51,54 +54,58 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    void EnableWorld(string world, int underground)
+    {
+            DisableWorlds();
+            Globals.CurrentWorld = _worlds.transform.Find(world).gameObject;
+            Globals.ChunkMaterialFloor.SetInt("_IsUnderground", underground);
+            Globals.ChunkMaterialSolid.SetInt("_IsUnderground", underground);
+            Globals.CurrentWorld.SetActive(true);
+    }
+
     void Update()
     {
         LoadAroundPlayer();
 
         if (Input.GetKeyDown(KeyCode.F1))
         {
-            DisableWorlds();
-            Globals.CurrentWorld = _worlds.transform.Find("overworld").gameObject;
-            Globals.ChunkMaterialFloor.SetFloat("_Daylight", 1.0f);
-            Globals.ChunkMaterialSolid.SetFloat("_Daylight", 1.0f);
-            Globals.CurrentWorld.SetActive(true);
+            EnableWorld("overworld", 0);
             Globals.CurrentWorldId = WorldsIds.overworld;
         }
         if (Input.GetKeyDown(KeyCode.F2))
         {
-            DisableWorlds();
-            Globals.CurrentWorld = _worlds.transform.Find("low_depth").gameObject;
-            Globals.ChunkMaterialFloor.SetFloat("_Daylight", 0.0f);
-            Globals.ChunkMaterialSolid.SetFloat("_Daylight", 0.0f);
-            Globals.CurrentWorld.SetActive(true);
+            EnableWorld("low_depth", 1);
             Globals.CurrentWorldId = WorldsIds.low_depth;
         }
 
-        if (Globals.CurrentWorldId == WorldsIds.overworld)
-            UpdateDayLight();
+        UpdateDayLight();
     }
 
     void UpdateDayLight()
     {
         if (_DayLightIncreasing)
-        {
-            _DayLight += Time.deltaTime * 0.1f;
-            if (_DayLight >= 1.0f)
-            {
-                _DayLight = 1.0f;
-                _DayLightIncreasing = false;
-            }
-        }
+            SetDaylight(_DayLight + Time.deltaTime * 0.1f);
         else
+            SetDaylight(_DayLight - Time.deltaTime * 0.1f);
+    }
+
+    void SetDaylight(float daylight)
+    {
+        Globals.ChunkMaterialFloor.SetFloat("_Daylight", daylight);
+        Globals.ChunkMaterialSolid.SetFloat("_Daylight", daylight);
+        Globals.SpritesMaterial.SetFloat("_Daylight", daylight);
+        
+        _DayLight = daylight;
+
+        if (_DayLight <= 0.0f)
         {
-            _DayLight -= Time.deltaTime * 0.1f;
-            if (_DayLight <= 0.0f)
-            {
-                _DayLight = 0.0f;
-                _DayLightIncreasing = true;
-            }
+            _DayLight = 0.0f;
+            _DayLightIncreasing = true;
         }
-        Globals.ChunkMaterialFloor.SetFloat("_Daylight", _DayLight);
-        Globals.ChunkMaterialSolid.SetFloat("_Daylight", _DayLight);
+        if (_DayLight >= 1.0f)
+        {
+            _DayLight = 1.0f;
+            _DayLightIncreasing = false;
+        }
     }
 }

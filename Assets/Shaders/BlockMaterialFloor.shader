@@ -30,6 +30,7 @@ Shader "Custom/BlockMaterialFloor"
 
             UNITY_DECLARE_TEX2DARRAY(_MainTex);
             float _Daylight;
+            int _IsUnderground;
 
             v2f vert (appdata v)
             {
@@ -44,6 +45,9 @@ Shader "Custom/BlockMaterialFloor"
             fixed4 frag (v2f i) : SV_Target
             {
                 float2 uvRepeat = fmod(i.uv, 1.0);
+                if (_IsUnderground == 1) {
+                    _Daylight = 0.0;
+                }
                 return UNITY_SAMPLE_TEX2DARRAY(_MainTex, float3(uvRepeat, i.textureIndex)) * max(_Daylight, (i.light / 255.0));
             }
             ENDCG

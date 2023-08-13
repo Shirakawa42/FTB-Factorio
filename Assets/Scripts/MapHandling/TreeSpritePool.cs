@@ -9,35 +9,36 @@ public class TreeSpritePool : MonoBehaviour
     private Transform _parent;
     private int _treeCount = 0;
 
+    private GameObject GenerateTree(bool active, Transform parent, int spriteId)
+    {
+        GameObject tree = new("Tree");
+        tree.SetActive(active);
+        SpriteRenderer spriteRenderer = tree.AddComponent<SpriteRenderer>();
+        spriteRenderer.sprite = _sprites[spriteId];
+        spriteRenderer.material = Globals.SpritesMaterial;
+        spriteRenderer.sortingLayerName = "Tree";
+        spriteRenderer.sortingOrder = _treeCount;
+        tree.transform.SetParent(parent);
+        tree.transform.localScale = new Vector3(2, 2, 1);
+        _treeCount++;
+        
+        return tree;
+    }
+
     void Awake()
     {
         _sprites = Resources.LoadAll<Sprite>("Textures/Trees");
         _parent = GameObject.Find("TreePool").transform;
 
         for (int i = 0; i < 500; i++)
-        {
-            GameObject tree = new("Tree");
-            tree.transform.SetParent(_parent);
-            tree.AddComponent<SpriteRenderer>();
-            tree.SetActive(false);
-            tree.GetComponent<SpriteRenderer>().sortingLayerName = "Tree";
-            tree.GetComponent<SpriteRenderer>().sortingOrder = _treeCount;
-            _treePool.Push(tree);
-            _treeCount++;
-        }
+            _treePool.Push(GenerateTree(false, _parent, 0));
     }
 
     public GameObject GetTree(int spriteId, Vector3 localPosition, Transform parent)
     {
         GameObject tree;
         if (_treePool.Count == 0)
-        {
-            tree = new("Tree");
-            tree.AddComponent<SpriteRenderer>();
-            tree.GetComponent<SpriteRenderer>().sortingLayerName = "Tree";
-            tree.GetComponent<SpriteRenderer>().sortingOrder = _treeCount;
-            _treeCount++;
-        }
+            tree = GenerateTree(true, parent, spriteId);
         else
             tree = _treePool.Pop();
         
