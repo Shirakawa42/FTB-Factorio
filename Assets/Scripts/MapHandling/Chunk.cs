@@ -148,17 +148,16 @@ public class Chunk
     private void CheckAndAddSprite(int index, Vector2Int localPosition)
     {
         PrimaryBlocks block = (PrimaryBlocks)ItemInfos.GetItemFromId(GetBlockId(localPosition));
-        if (block.GetType() != typeof(SpritePrimaryBlocks))
+        if (block.GroundSprite == null)
             return;
 
-        SpritePrimaryBlocks spriteBlock = (SpritePrimaryBlocks)block;
-        if (spriteBlock.GroundSprite != null)
+        if (block.GroundSprite != null)
         {
             string layer = "SpriteObj";
-            if (spriteBlock.SpriteUnderPlayer)
+            if (block.SpriteUnderPlayer)
                 layer = "SpriteUnderPlayer";
 
-            GameObject spriteObj = Globals.SpritePool.GetSpriteObj(spriteBlock.GroundSprite, new Vector3(localPosition.x, localPosition.y, 0), _chunkGameObject.transform, spriteBlock.SpriteScale, spriteBlock.SpriteOffset, layer);
+            GameObject spriteObj = Globals.SpritePool.GetSpriteObj(block.GroundSprite, new Vector3(localPosition.x, localPosition.y, 0), _chunkGameObject.transform, block.SpriteScale, block.SpriteOffset, layer);
             _sprites.Add(index, spriteObj);
         }
     }

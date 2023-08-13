@@ -168,7 +168,7 @@ public static class ItemInfos
             #region SpritePrimaryBlocks
             {
                 ItemIds.Wood,
-                new SpritePrimaryBlocks(
+                new PrimaryBlocks(
                     id: ItemIds.Wood,
                     name: "Wood",
                     description: "A Wood",
@@ -180,8 +180,8 @@ public static class ItemInfos
                     blockType: BlockTypes.Wood,
                     isSolid: true,
                     isTransparent: false,
-                    hp: 12,
-                    hpMax: 12,
+                    hp: 24,
+                    hpMax: 24,
                     solidityLevel: 1,
                     groundSprite: Globals.Sprites.GetSprite("Trees_1"),
                     spriteScale: 2f,
@@ -191,7 +191,7 @@ public static class ItemInfos
             },
             {
                 ItemIds.Torch,
-                new SpritePrimaryBlocks(
+                new PrimaryBlocks(
                     id: ItemIds.Torch,
                     name: "Torch",
                     description: "A Torch",
@@ -199,12 +199,11 @@ public static class ItemInfos
                     currentStack: 1,
                     sprite: Globals.Sprites.GetSprite("3208_341"),
                     dropId: ItemIds.Torch,
-                    textureId: TextureIds.None,
                     blockType: BlockTypes.Wood,
                     isSolid: false,
                     isTransparent: true,
-                    hp: 4,
-                    hpMax: 4,
+                    hp: 12,
+                    hpMax: 12,
                     solidityLevel: 1,
                     groundSprite: Globals.Sprites.GetSprite("3208_341"),
                     spriteScale: 0.75f,
