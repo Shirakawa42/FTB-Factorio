@@ -23,7 +23,6 @@ public enum ChunkTypes
 
 public class Chunk
 {
-    public Block[] Blocs = new Block[Globals.ChunkSize * Globals.ChunkSize];
     public Vector2Int Position;
     public WorldsIds WorldId;
     public ChunkTypes ChunkType;
@@ -38,6 +37,8 @@ public class Chunk
     private GameObject _chunkGameObject;
     private Mesh _mesh;
     private readonly Dictionary<int, GameObject> _trees = new();
+    private readonly Block[] Blocs = new Block[Globals.ChunkSize * Globals.ChunkSize];
+
 
     public Chunk(Vector2Int position, WorldsIds worldId, ChunkTypes chunkType)
     {
@@ -54,6 +55,11 @@ public class Chunk
     {
         GenerateVertices();
         GenerateMesh();
+    }
+
+    public ushort GetBlockId(Vector2Int position)
+    {
+        return Blocs[position.x + position.y * Globals.ChunkSize].Id;
     }
 
     private void CheckAndRemoveTree(int index)

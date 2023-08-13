@@ -61,10 +61,10 @@ public class PlayerController : MonoBehaviour
         Vector3 bottomLeftH = new(futurePositionH.x - PlayerSize / 2, futurePositionH.y - PlayerSize / 2, futurePositionH.z);
         Vector3 bottomRightH = new(futurePositionH.x + PlayerSize / 2, futurePositionH.y - PlayerSize / 2, futurePositionH.z);
 
-        if (WorldsHelper.GetSolidBlockStatsFromWorldPosition(topLeftH, Globals.CurrentWorldId).IsSolid == false &&
-            WorldsHelper.GetSolidBlockStatsFromWorldPosition(topRightH, Globals.CurrentWorldId).IsSolid == false &&
-            WorldsHelper.GetSolidBlockStatsFromWorldPosition(bottomLeftH, Globals.CurrentWorldId).IsSolid == false &&
-            WorldsHelper.GetSolidBlockStatsFromWorldPosition(bottomRightH, Globals.CurrentWorldId).IsSolid == false)
+        if (WorldsHelper.GetBlockStats(topLeftH, Globals.CurrentWorldId, ChunkTypes.Solid).IsSolid == false &&
+            WorldsHelper.GetBlockStats(topRightH, Globals.CurrentWorldId, ChunkTypes.Solid).IsSolid == false &&
+            WorldsHelper.GetBlockStats(bottomLeftH, Globals.CurrentWorldId, ChunkTypes.Solid).IsSolid == false &&
+            WorldsHelper.GetBlockStats(bottomRightH, Globals.CurrentWorldId, ChunkTypes.Solid).IsSolid == false)
         {
             move += moveH;
         }
@@ -75,10 +75,10 @@ public class PlayerController : MonoBehaviour
         Vector3 bottomLeftV = new(futurePositionV.x - PlayerSize / 2, futurePositionV.y - PlayerSize / 2, futurePositionV.z);
         Vector3 bottomRightV = new(futurePositionV.x + PlayerSize / 2, futurePositionV.y - PlayerSize / 2, futurePositionV.z);
 
-        if (WorldsHelper.GetSolidBlockStatsFromWorldPosition(topLeftV, Globals.CurrentWorldId).IsSolid == false &&
-            WorldsHelper.GetSolidBlockStatsFromWorldPosition(topRightV, Globals.CurrentWorldId).IsSolid == false &&
-            WorldsHelper.GetSolidBlockStatsFromWorldPosition(bottomLeftV, Globals.CurrentWorldId).IsSolid == false &&
-            WorldsHelper.GetSolidBlockStatsFromWorldPosition(bottomRightV, Globals.CurrentWorldId).IsSolid == false)
+        if (WorldsHelper.GetBlockStats(topLeftV, Globals.CurrentWorldId, ChunkTypes.Solid).IsSolid == false &&
+            WorldsHelper.GetBlockStats(topRightV, Globals.CurrentWorldId, ChunkTypes.Solid).IsSolid == false &&
+            WorldsHelper.GetBlockStats(bottomLeftV, Globals.CurrentWorldId, ChunkTypes.Solid).IsSolid == false &&
+            WorldsHelper.GetBlockStats(bottomRightV, Globals.CurrentWorldId, ChunkTypes.Solid).IsSolid == false)
         {
             move += moveV;
         }

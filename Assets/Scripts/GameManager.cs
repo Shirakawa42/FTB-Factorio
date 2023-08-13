@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
         Globals.Sprites = new Sprites();
         Globals.TreeSpritePool = GetComponent<TreeSpritePool>();
         Globals.Canvas = GameObject.Find("Canvas");
+        Globals.ChunksManager = GetComponent<ChunksManager>();
 
         Globals.Sprites.InitSprites();
         ItemInfos.InitItems();

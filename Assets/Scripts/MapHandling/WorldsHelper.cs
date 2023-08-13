@@ -45,35 +45,25 @@ public static class WorldsHelper
         return new Vector2Int(blockPosX, blockPosY);
     }
 
-    public static PrimaryBlocks GetSolidBlockStatsFromWorldPosition(Vector3 worldPosition, WorldsIds worldId)
+    public static PrimaryBlocks GetBlockStats(Vector3 worldPosition, WorldsIds worldId, ChunkTypes chunkType)
     {
         Vector2Int chunkPosition = GetChunkPositionFromWorldPosition(worldPosition);
         Vector2Int blockPosition = GetBlockPositionFromWorldPosition(worldPosition);
 
-        MapKey key = new(chunkPosition, worldId);
-        if (Map.SolidChunks.ContainsKey(key))
-            return (PrimaryBlocks)ItemInfos.GetItemFromId(Map.SolidChunks[key].Blocs[blockPosition.x + blockPosition.y * Globals.ChunkSize].Id);
+        Chunk chunk = Globals.ChunksManager.GetChunk(chunkPosition, worldId, chunkType);
+        if (chunk != null)
+            return (PrimaryBlocks)ItemInfos.GetItemFromId(chunk.GetBlockId(blockPosition));
         return (PrimaryBlocks)ItemInfos.GetItemFromId(ItemIds.Air);
     }
 
-    public static void SetSolidBlockStatsAtWorldPosition(Vector3 worldPosition, ushort id, WorldsIds worldId)
+    public static void SetBlock(Vector3 worldPosition, ushort id, WorldsIds worldId, ChunkTypes chunkType)
     {
         Vector2Int chunkPosition = GetChunkPositionFromWorldPosition(worldPosition);
         Vector2Int blockPosition = GetBlockPositionFromWorldPosition(worldPosition);
 
-        MapKey key = new(chunkPosition, worldId);
-        if (Map.SolidChunks.ContainsKey(key))
-            Map.SolidChunks[key].AddBlock(blockPosition, id);
-    }
-
-    public static void RemoveBlockAtWorldPosition(Vector3 worldPosition, WorldsIds worldId)
-    {
-        Vector2Int chunkPosition = GetChunkPositionFromWorldPosition(worldPosition);
-        Vector2Int blockPosition = GetBlockPositionFromWorldPosition(worldPosition);
-
-        MapKey key = new(chunkPosition, worldId);
-        if (Map.SolidChunks.ContainsKey(key))
-            Map.SolidChunks[key].RemoveBlock(blockPosition);
+        Chunk chunk = Globals.ChunksManager.GetChunk(chunkPosition, worldId, chunkType);
+        if (chunk != null)
+            chunk.AddBlock(blockPosition, id);
     }
 
     public static Vector2Int WorldPositionToVector2Int(Vector3 worldPosition)

@@ -29,12 +29,12 @@ public class BlockBreaking : MonoBehaviour
         groundItem.GetComponent<GroundItem>().SetItem(ItemInfos.GenerateItemFromId(block.DropId));
     }
 
-    public void AttackBlock(Vector3 blockWorldPosition, float miningPower, BlockTypes blockType, int miningLevel, WorldsIds worldId)
+    public void AttackBlock(Vector3 blockWorldPosition, float miningPower, BlockTypes blockType, int miningLevel, WorldsIds worldId, ChunkTypes chunkType)
     {
         bool willLoot = true;
         Vector2Int blockWorldPositionInt = WorldsHelper.WorldPositionToVector2Int(blockWorldPosition);
 
-        PrimaryBlocks block = WorldsHelper.GetSolidBlockStatsFromWorldPosition(blockWorldPosition, worldId);
+        PrimaryBlocks block = WorldsHelper.GetBlockStats(blockWorldPosition, worldId, chunkType);
 
         if (block.Id == ItemIds.Air)
             return;
@@ -60,7 +60,7 @@ public class BlockBreaking : MonoBehaviour
         {
             _lastAttackedBlock.Hp = _lastAttackedBlock.HpMax;
             Globals.BlockBreaking.GetComponent<SpriteRenderer>().sprite = null;
-            WorldsHelper.RemoveBlockAtWorldPosition(blockWorldPosition, worldId);
+            WorldsHelper.SetBlock(blockWorldPosition, ItemIds.Air, worldId, chunkType);
             if (willLoot)
             {
                 GenerateGroundItem(blockWorldPositionInt, block);

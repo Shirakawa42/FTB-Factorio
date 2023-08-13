@@ -21,4 +21,5 @@ public static class Globals
     public static Material ChunkMaterialFloor;
     public static Material ChunkMaterialSolid;
     public static Material SpritesMaterial;
+    public static ChunksManager ChunksManager;
 }
