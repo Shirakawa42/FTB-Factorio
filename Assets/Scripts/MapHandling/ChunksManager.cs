@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public struct MapKey
@@ -21,7 +20,7 @@ public class ChunksManager : MonoBehaviour
 {
     private Vector2Int _playerChunkPosition;
     private WorldsIds _oldWorldId = WorldsIds.overworld;
-    private Dictionary<MapKey, Chunk> Chunks = new();
+    private Dictionary<MapKey, Chunk> _chunks = new();
 
     void Start()
     {
@@ -53,11 +52,11 @@ public class ChunksManager : MonoBehaviour
             for (int y = position.y - Globals.LoadDistance; y < position.y + Globals.LoadDistance; y++)
             {
                 MapKey key = new(new Vector2Int(x, y), worldId, ChunkTypes.Floor);
-                if (!Chunks.ContainsKey(key))
-                    Chunks.Add(key, new Chunk(new Vector2Int(x, y), worldId, ChunkTypes.Floor));
+                if (!_chunks.ContainsKey(key))
+                    _chunks.Add(key, new Chunk(new Vector2Int(x, y), worldId, ChunkTypes.Floor));
                 key.ChunkType = ChunkTypes.Solid;
-                if (!Chunks.ContainsKey(key))
-                    Chunks.Add(key, new Chunk(new Vector2Int(x, y), worldId, ChunkTypes.Solid));
+                if (!_chunks.ContainsKey(key))
+                    _chunks.Add(key, new Chunk(new Vector2Int(x, y), worldId, ChunkTypes.Solid));
             }
         }
     }
@@ -65,8 +64,8 @@ public class ChunksManager : MonoBehaviour
     public Chunk GetChunk(Vector2Int position, WorldsIds worldId, ChunkTypes chunkType)
     {
         MapKey key = new(position, worldId, chunkType);
-        if (Chunks.ContainsKey(key))
-            return Chunks[key];
+        if (_chunks.ContainsKey(key))
+            return _chunks[key];
         return null;
     }
 
