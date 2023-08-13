@@ -9,7 +9,8 @@ public class Inventory : MonoBehaviour
 
     private readonly Item[] itemInSlots = new Item[Globals.InventorySlots];
 
-    public void RemoveItemFromInventory(ushort slot) {
+    public void RemoveItemFromInventory(ushort slot)
+    {
         if (slot + 1 > Globals.InventorySlots)
             return;
 
@@ -17,30 +18,46 @@ public class Inventory : MonoBehaviour
         itemInSlots[slot] = null;
     }
 
-    public void AddItemToInventory(Item item, ushort slot) {
+    public void AddItemToInventory(Item item, ushort slot)
+    {
         if (slot + 1 > Globals.InventorySlots)
             return;
-
-
-        // print len of inventorySlots
-        Debug.Log(inventorySlots.Count + " " + slot);
 
         inventorySlots[slot].SetItem(item);
         itemInSlots[slot] = item;
     }
 
-    public void AddItemToFirstEmptySlot(Item item) {
-        for (ushort i = 0; i < Globals.InventorySlots; i++) {
-            if (itemInSlots[i] == null) {
-                AddItemToInventory(item, i);
-                return;
+    public bool AddItemToExistingSlot(Item item) {
+        for (ushort i = 0; i < Globals.InventorySlots; i++)
+        {
+            if (itemInSlots[i] != null && itemInSlots[i].Id == item.Id && itemInSlots[i].CurrentStack + item.CurrentStack <= itemInSlots[i].MaxStack)
+            {
+                itemInSlots[i].CurrentStack += item.CurrentStack;
+                inventorySlots[i].SetItem(itemInSlots[i]);
+
+                return true;
             }
         }
 
-        Debug.Log("Inventory is full");
+        return false;
     }
 
-    public void TMPAddItemsToInventory() {
+    public bool AddItemToFirstEmptySlot(Item item)
+    {
+        for (ushort i = 0; i < Globals.InventorySlots; i++)
+        {
+            if (itemInSlots[i] == null)
+            {
+                AddItemToInventory(item, i);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public void TMPAddItemsToInventory()
+    {
         AddItemToFirstEmptySlot(ItemInfos.GenerateItemFromId(ItemIds.Pickaxe_Wood));
         AddItemToFirstEmptySlot(ItemInfos.GenerateItemFromId(ItemIds.Pickaxe_Wood));
         AddItemToFirstEmptySlot(ItemInfos.GenerateItemFromId(ItemIds.Pickaxe_Wood));
@@ -49,16 +66,19 @@ public class Inventory : MonoBehaviour
         RemoveItemFromInventory(2);
     }
 
-    public void Init(GameObject inventoryGO) {
+    public void Init(GameObject inventoryGO)
+    {
         inventory = inventoryGO;
         inventory.SetActive(false);
     }
 
-    public void CloseInventory() {
+    public void CloseInventory()
+    {
         inventory.SetActive(false);
     }
 
-    public void OpenInventory() {
+    public void OpenInventory()
+    {
         inventory.SetActive(true);
     }
 

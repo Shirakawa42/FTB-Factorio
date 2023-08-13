@@ -5,7 +5,7 @@ using UnityEngine;
 public class Initializor : MonoBehaviour
 {
     public GameObject Inventory;
-    private GameObject _Toolbar;
+    public GameObject Toolbar;
 
     private GameObject _SlotPrefab;
     private GameObject _HighlightPrefab;
@@ -20,33 +20,35 @@ public class Initializor : MonoBehaviour
         _ToolbarPrefab = Resources.Load<GameObject>("Prefabs/Toolbar");
         _InventoryPrefab = Resources.Load<GameObject>("Prefabs/Inventory");
 
-        _Toolbar = Instantiate(_ToolbarPrefab, transform);
+        Toolbar = Instantiate(_ToolbarPrefab, transform);
         Inventory = Instantiate(_InventoryPrefab, transform);
 
         Inventory.GetComponent<Inventory>().Init(Inventory);
 
         InitSlots();
 
-        _Toolbar.GetComponent<Toolbar>().SetHighlight(_HighlightPrefab);
+        Toolbar.GetComponent<Toolbar>().SetHighlight(_HighlightPrefab);
     }
 
     private void InitSlots()
     {
         float slotWidth = _SlotPrefab.GetComponent<RectTransform>().rect.width;
-        float leftBorderX = _Toolbar.GetComponent<RectTransform>().anchoredPosition.x - _Toolbar.GetComponent<RectTransform>().rect.width / 2f;
+        float leftBorderX = Toolbar.GetComponent<RectTransform>().anchoredPosition.x - Toolbar.GetComponent<RectTransform>().rect.width / 2f;
         float toolbarWidth = slotWidth * Globals.ToolbarSlots;
         float spacing = toolbarWidth / Globals.ToolbarSlots;
 
-        List<Slot> toolbarSlots = _Toolbar.GetComponent<Toolbar>().toolbarSlots;
+        List<Slot> toolbarSlots = Toolbar.GetComponent<Toolbar>().toolbarSlots;
         for (int i = 0; i < Globals.ToolbarSlots; i++)
         {
-            GameObject _slot = Instantiate(_SlotPrefab, _Toolbar.transform);
+            GameObject _slot = Instantiate(_SlotPrefab, Toolbar.transform);
             _slot.name = "Slot " + i;
-            _slot.transform.SetParent(_Toolbar.transform);
+            _slot.transform.SetParent(Toolbar.transform);
             _slot.transform.localPosition = new Vector3(spacing / 2 + leftBorderX + spacing * i, 0, 0);
             toolbarSlots.Add(_slot.GetComponent<Slot>());
             toolbarSlots[i].Init();
         }
+
+        float slotHeight = _SlotPrefab.GetComponent<RectTransform>().rect.height;
 
         List<Slot> inventorySlots = Inventory.GetComponent<Inventory>().inventorySlots;
         for (int i = 0; i < Globals.InventorySlots; i++)
@@ -54,7 +56,7 @@ public class Initializor : MonoBehaviour
             GameObject _slot = Instantiate(_SlotPrefab, Inventory.transform);
             _slot.name = "Slot " + i;
             _slot.transform.SetParent(Inventory.transform);
-            _slot.transform.localPosition = new Vector3(spacing / 2 + leftBorderX + spacing * i, 0, 0);
+            _slot.transform.localPosition = new Vector3(spacing / 2 + leftBorderX + spacing * (i % Globals.ToolbarSlots), -(Mathf.Floor(i / Globals.ToolbarSlots) * slotHeight), 0);
             inventorySlots.Add(_slot.GetComponent<Slot>());
             inventorySlots[i].Init();
         }
