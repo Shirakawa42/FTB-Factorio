@@ -7,8 +7,8 @@ public class PlayerInputs : MonoBehaviour
     private Item EquippedItem = null;
     private SpriteRenderer EquippedItemSpriteRenderer = null;
     private Animation _animation = null;
-    private const float _cooldownMaxRight = 0.1f;
-    private const float _cooldownMaxLeft = 0.1f;
+    private const float _cooldownMaxRight = 0.05f;
+    private const float _cooldownMaxLeft = 0.05f;
     private float _cooldownRight = 0f;
     private float _cooldownLeft = 0f;
     private bool _inventoryStatus = false;

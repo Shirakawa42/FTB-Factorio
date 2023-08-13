@@ -12,23 +12,19 @@ public class PrimaryBlocks : Item
     public short Hp { get; set; }
     public short HpMax { get; }
     public ushort SolidityLevel { get; }
-    public Sprite GroundSprite { get; }
-    public float SpriteScale { get; }
-    public Vector2 SpriteOffset { get; }
-    public bool SpriteUnderPlayer { get; }
+    public ushort LightSourcePower { get; }
 
     public override void RightClick(Animation animation)
     {
         Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         float distance = Vector2.Distance(mousePosition, Globals.Player.transform.position);
-        if (distance > 4f || distance < 1f || WorldsHelper.GetBlockStats(mousePosition, Globals.CurrentWorldId, ChunkTypes.Solid).Id != ItemIds.Air)
+        if (distance > 4f || WorldsHelper.GetBlockStats(mousePosition, Globals.CurrentWorldId, ChunkTypes.Solid).Id != ItemIds.Air)
             return;
         WorldsHelper.SetBlock(mousePosition, Id, Globals.CurrentWorldId, ChunkTypes.Solid);
     }
 
     public PrimaryBlocks(ushort id, string name, string description, ushort maxStack, ushort currentStack, Sprite sprite, ushort dropId,
-            ushort textureId, BlockTypes blockType, bool isSolid, bool isTransparent, short hp, short hpMax, ushort solidityLevel,
-            Sprite groundSprite, float spriteScale, Vector2 spriteOffset, bool spriteUnderPlayer)
+            ushort textureId, BlockTypes blockType, bool isSolid, bool isTransparent, short hp, short hpMax, ushort solidityLevel, ushort lightSourcePower = 0)
             : base(id, name, description, maxStack, currentStack, sprite)
     {
         DropId = dropId;
@@ -39,15 +35,12 @@ public class PrimaryBlocks : Item
         Hp = hp;
         HpMax = hpMax;
         SolidityLevel = solidityLevel;
-        GroundSprite = groundSprite;
-        SpriteScale = spriteScale;
-        SpriteOffset = spriteOffset;
-        SpriteUnderPlayer = spriteUnderPlayer;
+        LightSourcePower = lightSourcePower;
     }
 
     public override Item Clone()
     {
-        return new PrimaryBlocks(Id, Name, Description, MaxStack, CurrentStack, Sprite, DropId, TextureId, BlockType, IsSolid, IsTransparent, Hp, HpMax, SolidityLevel, GroundSprite, SpriteScale, SpriteOffset, SpriteUnderPlayer);
+        return new PrimaryBlocks(Id, Name, Description, MaxStack, CurrentStack, Sprite, DropId, TextureId, BlockType, IsSolid, IsTransparent, Hp, HpMax, SolidityLevel, LightSourcePower);
     }
 
     public float GetHpPercentage()
