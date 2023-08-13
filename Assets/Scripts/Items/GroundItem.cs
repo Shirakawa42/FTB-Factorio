@@ -37,7 +37,5 @@ public class GroundItem : MonoBehaviour
     void Update()
     {
         transform.Rotate(0, 0, _rotateSpeed * Time.deltaTime);
-
-
     }
 }

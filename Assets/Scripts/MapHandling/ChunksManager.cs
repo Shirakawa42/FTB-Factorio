@@ -7,11 +7,13 @@ public struct MapKey
 {
     public Vector2Int Position;
     public WorldsIds WorldId;
+    public ChunkTypes ChunkType;
 
-    public MapKey(Vector2Int position, WorldsIds worldId)
+    public MapKey(Vector2Int position, WorldsIds worldId, ChunkTypes chunkType)
     {
         Position = position;
         WorldId = worldId;
+        ChunkType = chunkType;
     }
 }
 
@@ -19,25 +21,11 @@ public class ChunksManager : MonoBehaviour
 {
     private Vector2Int _playerChunkPosition;
     private WorldsIds _oldWorldId = WorldsIds.overworld;
-    private Dictionary<MapKey, Chunk> FloorChunks = new();
-    private Dictionary<MapKey, Chunk> SolidChunks = new();
-
-    private List<Vector2Int> _chunksToLoad = new();
+    private Dictionary<MapKey, Chunk> Chunks = new();
 
     void Start()
     {
         _playerChunkPosition = new Vector2Int(int.MaxValue, int.MaxValue);
-    }
-
-    private IEnumerator LoadChunks()
-    {
-        while (_chunksToLoad.Count > 0)
-        {
-            Vector2Int chunkPosition = _chunksToLoad[0];
-            _chunksToLoad.RemoveAt(0);
-            LoadAroundChunkPosition(chunkPosition, Globals.CurrentWorldId);
-            yield return null;
-        }
     }
 
     private void LoadAroundPlayer()
@@ -64,33 +52,21 @@ public class ChunksManager : MonoBehaviour
         {
             for (int y = position.y - Globals.LoadDistance; y < position.y + Globals.LoadDistance; y++)
             {
-                MapKey key = new(new Vector2Int(x, y), worldId);
-                if (!FloorChunks.ContainsKey(key))
-                {
-                    FloorChunks.Add(key, new Chunk(new Vector2Int(x, y), worldId, ChunkTypes.Floor));
-                }
-                if (!SolidChunks.ContainsKey(key))
-                {
-                    SolidChunks.Add(key, new Chunk(new Vector2Int(x, y), worldId, ChunkTypes.Solid));
-                }
+                MapKey key = new(new Vector2Int(x, y), worldId, ChunkTypes.Floor);
+                if (!Chunks.ContainsKey(key))
+                    Chunks.Add(key, new Chunk(new Vector2Int(x, y), worldId, ChunkTypes.Floor));
+                key.ChunkType = ChunkTypes.Solid;
+                if (!Chunks.ContainsKey(key))
+                    Chunks.Add(key, new Chunk(new Vector2Int(x, y), worldId, ChunkTypes.Solid));
             }
         }
     }
 
     public Chunk GetChunk(Vector2Int position, WorldsIds worldId, ChunkTypes chunkType)
     {
-        if (chunkType == ChunkTypes.Floor)
-        {
-            if (FloorChunks.ContainsKey(new MapKey(position, worldId)))
-                return FloorChunks[new MapKey(position, worldId)];
-            return null;
-        }
-        else if (chunkType == ChunkTypes.Solid)
-        {
-            if (SolidChunks.ContainsKey(new MapKey(position, worldId)))
-                return SolidChunks[new MapKey(position, worldId)];
-            return null;
-        }
+        MapKey key = new(position, worldId, chunkType);
+        if (Chunks.ContainsKey(key))
+            return Chunks[key];
         return null;
     }
 
