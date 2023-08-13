@@ -31,7 +31,6 @@ public class Chunk
     private readonly List<int> _indices = new();
     private readonly List<Vector2> _uvs = new();
     private readonly List<Vector2> _uvts = new();
-    private readonly List<MaterialPropertyBlock> _blocksProperties = new();
     private MeshRenderer _meshRenderer;
     private MeshFilter _meshFilter;
     private GameObject _chunkGameObject;
@@ -145,7 +144,6 @@ public class Chunk
         _indices.Clear();
         _uvs.Clear();
         _uvts.Clear();
-        _blocksProperties.Clear();
 
         bool[,] visited = new bool[Globals.ChunkSize, Globals.ChunkSize];
 
