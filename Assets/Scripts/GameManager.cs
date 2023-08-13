@@ -10,8 +10,6 @@ public class GameManager : MonoBehaviour
     private WorldsIds _oldWorldId = WorldsIds.overworld;
 
     private GameObject _worlds;
-    private float _DayLight = 1.0f;
-    private bool _DayLightIncreasing = false;
 
     void Awake()
     {
@@ -19,18 +17,13 @@ public class GameManager : MonoBehaviour
         Globals.BlockBreaking = GameObject.Find("BlockBreaking");
         _worlds = GameObject.Find("Worlds");
         Globals.CurrentWorld = _worlds.transform.Find("overworld").gameObject;
-        Globals.ChunkMaterialFloor = Resources.Load<Material>("Materials/BlockMaterialFloor");
-        Globals.ChunkMaterialSolid = Resources.Load<Material>("Materials/BlockMaterialSolid");
-        Globals.SpritesMaterial = Resources.Load<Material>("Materials/Sprites");
-        Globals.ChunkMaterialFloor.SetFloat("_Daylight", 1.0f);
-        Globals.ChunkMaterialSolid.SetFloat("_Daylight", 1.0f);
-        Globals.SpritesMaterial.SetFloat("_Daylight", 1.0f);
         Globals.Sprites = new Sprites();
-        Globals.Sprites.InitSprites();
         Globals.TreeSpritePool = GetComponent<TreeSpritePool>();
-        ItemInfos.InitItems();
         _playerChunkPosition = new Vector2Int(int.MaxValue, int.MaxValue);
         Globals.Canvas = GameObject.Find("Canvas");
+
+        Globals.Sprites.InitSprites();
+        ItemInfos.InitItems();
     }
 
     private void LoadAroundPlayer()
@@ -76,36 +69,6 @@ public class GameManager : MonoBehaviour
         {
             EnableWorld("low_depth", 1);
             Globals.CurrentWorldId = WorldsIds.low_depth;
-        }
-
-        UpdateDayLight();
-    }
-
-    void UpdateDayLight()
-    {
-        if (_DayLightIncreasing)
-            SetDaylight(_DayLight + Time.deltaTime * 0.1f);
-        else
-            SetDaylight(_DayLight - Time.deltaTime * 0.1f);
-    }
-
-    void SetDaylight(float daylight)
-    {
-        Globals.ChunkMaterialFloor.SetFloat("_Daylight", daylight);
-        Globals.ChunkMaterialSolid.SetFloat("_Daylight", daylight);
-        Globals.SpritesMaterial.SetFloat("_Daylight", daylight);
-        
-        _DayLight = daylight;
-
-        if (_DayLight <= 0.0f)
-        {
-            _DayLight = 0.0f;
-            _DayLightIncreasing = true;
-        }
-        if (_DayLight >= 1.0f)
-        {
-            _DayLight = 1.0f;
-            _DayLightIncreasing = false;
         }
     }
 }

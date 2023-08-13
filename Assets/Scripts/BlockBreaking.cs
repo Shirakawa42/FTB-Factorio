@@ -32,9 +32,9 @@ public class BlockBreaking : MonoBehaviour
     public void AttackBlock(Vector3 blockWorldPosition, float miningPower, BlockTypes blockType, int miningLevel, WorldsIds worldId)
     {
         bool willLoot = true;
-        Vector2Int blockWorldPositionInt = Globals.WorldPositionToVector2Int(blockWorldPosition);
+        Vector2Int blockWorldPositionInt = WorldsHelper.WorldPositionToVector2Int(blockWorldPosition);
 
-        PrimaryBlocks block = Globals.GetSolidBlockStatsFromWorldPosition(blockWorldPosition, worldId);
+        PrimaryBlocks block = WorldsHelper.GetSolidBlockStatsFromWorldPosition(blockWorldPosition, worldId);
 
         if (block.Id == ItemIds.Air)
             return;
@@ -60,7 +60,7 @@ public class BlockBreaking : MonoBehaviour
         {
             _lastAttackedBlock.Hp = _lastAttackedBlock.HpMax;
             Globals.BlockBreaking.GetComponent<SpriteRenderer>().sprite = null;
-            Globals.RemoveBlockAtWorldPosition(blockWorldPosition, worldId);
+            WorldsHelper.RemoveBlockAtWorldPosition(blockWorldPosition, worldId);
             if (willLoot)
             {
                 GenerateGroundItem(blockWorldPositionInt, block);

@@ -28,7 +28,7 @@ public class GroundItem : MonoBehaviour
     void OnTriggerEnter2D(Collider2D col)
     {
         Debug.Log("Player picked up ");
-        if (col.tag == "Player") {
+        if (col.CompareTag("Player")) {
             if (InventoryHelper.AddItemToPlayer(_item))
                 Destroy();
         }

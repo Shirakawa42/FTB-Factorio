@@ -84,7 +84,7 @@ public class Chunk
 
     private Transform GetParent()
     {
-        GameObject world = Worlds.GetWorldFromId(WorldId);
+        GameObject world = WorldsHelper.GetWorldFromId(WorldId);
         if (ChunkType == ChunkTypes.Floor)
             return world.transform.Find("floor");
         else if (ChunkType == ChunkTypes.Solid)
