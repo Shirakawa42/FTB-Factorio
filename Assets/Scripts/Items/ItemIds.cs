@@ -11,4 +11,5 @@ public static class ItemIds
     public const ushort Sand = 8;
     public const ushort Air = 9;
     public const ushort Wood = 10;
+    public const ushort Torch = 11;
 }

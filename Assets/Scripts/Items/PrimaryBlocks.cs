@@ -12,6 +12,10 @@ public class PrimaryBlocks : Item
     public short Hp { get; set; }
     public short HpMax { get; }
     public ushort SolidityLevel { get; }
+    public Sprite GroundSprite { get; }
+    public float SpriteScale { get; }
+    public Vector2 SpriteOffset { get; }
+    public bool SpriteUnderPlayer { get; }
 
     public override void RightClick(Animation animation)
     {
@@ -22,7 +26,10 @@ public class PrimaryBlocks : Item
         WorldsHelper.SetBlock(mousePosition, Id, Globals.CurrentWorldId, ChunkTypes.Solid);
     }
 
-    public PrimaryBlocks(ushort id, string name, string description, ushort maxStack, ushort currentStack, Sprite sprite, ushort dropId, ushort textureId, BlockTypes blockType, bool isSolid, bool isTransparent, short hp, short hpMax, ushort solidityLevel) : base(id, name, description, maxStack, currentStack, sprite)
+    public PrimaryBlocks(ushort id, string name, string description, ushort maxStack, ushort currentStack, Sprite sprite, ushort dropId,
+            ushort textureId, BlockTypes blockType, bool isSolid, bool isTransparent, short hp, short hpMax, ushort solidityLevel,
+            Sprite groundSprite, float spriteScale, Vector2 spriteOffset, bool spriteUnderPlayer)
+            : base(id, name, description, maxStack, currentStack, sprite)
     {
         DropId = dropId;
         TextureId = textureId;
@@ -32,11 +39,15 @@ public class PrimaryBlocks : Item
         Hp = hp;
         HpMax = hpMax;
         SolidityLevel = solidityLevel;
+        GroundSprite = groundSprite;
+        SpriteScale = spriteScale;
+        SpriteOffset = spriteOffset;
+        SpriteUnderPlayer = spriteUnderPlayer;
     }
 
     public override Item Clone()
     {
-        return new PrimaryBlocks(Id, Name, Description, MaxStack, CurrentStack, Sprite, DropId, TextureId, BlockType, IsSolid, IsTransparent, Hp, HpMax, SolidityLevel);
+        return new PrimaryBlocks(Id, Name, Description, MaxStack, CurrentStack, Sprite, DropId, TextureId, BlockType, IsSolid, IsTransparent, Hp, HpMax, SolidityLevel, GroundSprite, SpriteScale, SpriteOffset, SpriteUnderPlayer);
     }
 
     public float GetHpPercentage()

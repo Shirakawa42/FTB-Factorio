@@ -17,7 +17,7 @@ public static class Globals
     public static GameObject BlockBreaking;
     public static GameObject Canvas;
     public static Sprites Sprites;
-    public static TreeSpritePool TreeSpritePool;
+    public static SpritePool SpritePool;
     public static Material ChunkMaterialFloor;
     public static Material ChunkMaterialSolid;
     public static Material SpritesMaterial;

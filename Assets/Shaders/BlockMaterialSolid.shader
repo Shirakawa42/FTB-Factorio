@@ -48,7 +48,10 @@ Shader "Custom/BlockMaterialSolid"
                 if (_IsUnderground == 1) {
                     _Daylight = 0.0;
                 }
-                return UNITY_SAMPLE_TEX2DARRAY(_MainTex, float3(uvRepeat, i.textureIndex)) * 0.3 * max(_Daylight, (i.light / 255.0));
+                if (i.light < 8.0) {
+                    i.light = 0.0;
+                }
+                return UNITY_SAMPLE_TEX2DARRAY(_MainTex, float3(uvRepeat, i.textureIndex)) * 0.3 * max(_Daylight, (i.light / 32.0));
             }
             ENDCG
         }

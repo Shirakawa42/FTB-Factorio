@@ -41,10 +41,13 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: SpriteUnderPlayer
+    uniqueID: 2995795653
+    locked: 0
   - name: Player
     uniqueID: 2942919575
     locked: 0
-  - name: Tree
+  - name: SpriteObj
     uniqueID: 3445233701
     locked: 0
   - name: UI

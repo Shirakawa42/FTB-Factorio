@@ -21,10 +21,29 @@ public class ChunksManager : MonoBehaviour
     private Vector2Int _playerChunkPosition;
     private WorldsIds _oldWorldId = WorldsIds.overworld;
     private Dictionary<MapKey, Chunk> _chunks = new();
+    private readonly Stack<MapKey> _chunksToLoad = new();
 
     void Start()
     {
         _playerChunkPosition = new Vector2Int(int.MaxValue, int.MaxValue);
+        StartCoroutine(LoadChunks());
+    }
+
+    private IEnumerator LoadChunks()
+    {
+        while (true)
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                if (_chunksToLoad.Count > 0)
+                {
+                    MapKey key = _chunksToLoad.Pop();
+                    Chunk chunk = _chunks[key];
+                    chunk.ReloadChunk();
+                }
+            }
+            yield return null;
+        }
     }
 
     private void LoadAroundPlayer()
@@ -54,9 +73,11 @@ public class ChunksManager : MonoBehaviour
                 MapKey key = new(new Vector2Int(x, y), worldId, ChunkTypes.Floor);
                 if (!_chunks.ContainsKey(key))
                     _chunks.Add(key, new Chunk(new Vector2Int(x, y), worldId, ChunkTypes.Floor));
+                _chunksToLoad.Push(key);
                 key.ChunkType = ChunkTypes.Solid;
                 if (!_chunks.ContainsKey(key))
                     _chunks.Add(key, new Chunk(new Vector2Int(x, y), worldId, ChunkTypes.Solid));
+                _chunksToLoad.Push(key);
             }
         }
     }
@@ -64,9 +85,9 @@ public class ChunksManager : MonoBehaviour
     public Chunk GetChunk(Vector2Int position, WorldsIds worldId, ChunkTypes chunkType)
     {
         MapKey key = new(position, worldId, chunkType);
-        if (_chunks.ContainsKey(key))
-            return _chunks[key];
-        return null;
+        if (!_chunks.ContainsKey(key))
+            _chunks.Add(key, new Chunk(position, worldId, chunkType));
+        return _chunks[key];
     }
 
 }

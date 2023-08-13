@@ -51,7 +51,7 @@ public static class WorldsHelper
         Vector2Int blockPosition = GetBlockPositionFromWorldPosition(worldPosition);
 
         Chunk chunk = Globals.ChunksManager.GetChunk(chunkPosition, worldId, chunkType);
-        if (chunk != null)
+        if (chunk != null && chunk.IsLoaded())
             return (PrimaryBlocks)ItemInfos.GetItemFromId(chunk.GetBlockId(blockPosition));
         return (PrimaryBlocks)ItemInfos.GetItemFromId(ItemIds.Air);
     }
@@ -62,8 +62,8 @@ public static class WorldsHelper
         Vector2Int blockPosition = GetBlockPositionFromWorldPosition(worldPosition);
 
         Chunk chunk = Globals.ChunksManager.GetChunk(chunkPosition, worldId, chunkType);
-        if (chunk != null)
-            chunk.AddBlock(blockPosition, id);
+        if (chunk != null && chunk.IsLoaded())
+            chunk.SetBlock(blockPosition, id);
     }
 
     public static Vector2Int WorldPositionToVector2Int(Vector3 worldPosition)

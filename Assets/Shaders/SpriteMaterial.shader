@@ -38,6 +38,7 @@ Shader "Custom/Sprites"
             float4 _MainTex_ST;
             float4 _Color;
             float _Daylight;
+            int _IsUnderground;
 
             v2f vert (appdata_t v)
             {
@@ -51,7 +52,9 @@ Shader "Custom/Sprites"
             half4 frag (v2f i) : SV_Target
             {
                 half4 col = tex2D(_MainTex, i.uv) * _Color;
-                col.rgb *= max(_Daylight, (1.0 / 255.0));
+                if (_IsUnderground == 1)
+                    _Daylight = 0.0;
+                col.rgb *= max(_Daylight, (1.0 / 32.0));
                 return col;
             }
             ENDCG

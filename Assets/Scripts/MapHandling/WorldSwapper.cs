@@ -27,6 +27,7 @@ public class WorldSwapper : MonoBehaviour
             Globals.CurrentWorld = _worlds.transform.Find(world).gameObject;
             Globals.ChunkMaterialFloor.SetInt("_IsUnderground", underground);
             Globals.ChunkMaterialSolid.SetInt("_IsUnderground", underground);
+            Globals.SpritesMaterial.SetInt("_IsUnderground", underground);
             Globals.CurrentWorld.SetActive(true);
     }
 

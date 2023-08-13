@@ -17,4 +17,5 @@ public static class TextureIds
     public const ushort FurnaceFrontOn = 14;
     public const ushort FurnaceBottom = 15;
     public const ushort Leaves = 16;
+    public const ushort None = ushort.MaxValue;
 }

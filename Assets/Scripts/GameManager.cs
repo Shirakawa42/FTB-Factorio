@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
         Globals.Player = GameObject.Find("Player");
         Globals.BlockBreaking = GameObject.Find("BlockBreaking");
         Globals.Sprites = new Sprites();
-        Globals.TreeSpritePool = GetComponent<TreeSpritePool>();
+        Globals.SpritePool = GetComponent<SpritePool>();
         Globals.Canvas = GameObject.Find("Canvas");
         Globals.ChunksManager = GetComponent<ChunksManager>();
 

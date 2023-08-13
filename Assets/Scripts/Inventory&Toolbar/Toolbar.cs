@@ -21,6 +21,7 @@ public class Toolbar : MonoBehaviour
         AddItemToFirstEmptySlot(ItemInfos.GenerateItemFromId(ItemIds.Pickaxe_Gold));
         AddItemToFirstEmptySlot(ItemInfos.GenerateItemFromId(ItemIds.Pickaxe_Diamond));
         AddItemToFirstEmptySlot(ItemInfos.GenerateItemFromId(ItemIds.Stone));
+        AddItemToFirstEmptySlot(ItemInfos.GenerateItemFromId(ItemIds.Torch));
 
         SelectSlot(0);
     }

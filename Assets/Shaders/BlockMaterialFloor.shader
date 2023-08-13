@@ -48,7 +48,7 @@ Shader "Custom/BlockMaterialFloor"
                 if (_IsUnderground == 1) {
                     _Daylight = 0.0;
                 }
-                return UNITY_SAMPLE_TEX2DARRAY(_MainTex, float3(uvRepeat, i.textureIndex)) * max(_Daylight, (i.light / 255.0));
+                return UNITY_SAMPLE_TEX2DARRAY(_MainTex, float3(uvRepeat, i.textureIndex)) * max(_Daylight, (i.light / 32.0));
             }
             ENDCG
         }
