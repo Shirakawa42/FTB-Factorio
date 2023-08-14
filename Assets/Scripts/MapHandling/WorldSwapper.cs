@@ -11,6 +11,7 @@ public class WorldSwapper : MonoBehaviour
     {
         _worlds = GameObject.Find("Worlds");
         Globals.CurrentWorld = _worlds.transform.Find("overworld").gameObject;
+        EnableWorld("overworld", 0);
     }
 
     void DisableWorlds()

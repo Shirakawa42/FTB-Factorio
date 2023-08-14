@@ -120,7 +120,7 @@ public class ChunksManager : MonoBehaviour
             _modifiedChunks.Add(new MapKey(chunk.Position, worldsId));
 
         byte newlightIntensity;
-        if (ItemInfos.GetPrimaryBlockFromId(GetBlock(blockWorldPosition, worldsId, ChunkTypes.Solid).Id).IsTransparent)
+        if (removeLight || ItemInfos.GetPrimaryBlockFromId(GetBlock(blockWorldPosition, worldsId, ChunkTypes.Solid).Id).IsTransparent)
             newlightIntensity = (lightIntensity < 32) ? (byte)0 : (byte)(lightIntensity - 32);
         else
             newlightIntensity = (lightIntensity < 96) ? (byte)0 : (byte)(lightIntensity - 96);
