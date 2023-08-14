@@ -54,7 +54,7 @@ Shader "Custom/Sprites"
                 half4 col = tex2D(_MainTex, i.uv) * _Color;
                 if (_IsUnderground == 1)
                     _Daylight = 0.0;
-                col.rgb *= max(_Daylight, (1.0 / 32.0));
+                col.rgb *= max(_Daylight, (1.0 / 255.0));
                 return col;
             }
             ENDCG

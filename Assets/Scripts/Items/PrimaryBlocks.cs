@@ -12,7 +12,7 @@ public class PrimaryBlocks : Item
     public short Hp { get; set; }
     public short HpMax { get; }
     public ushort SolidityLevel { get; }
-    public ushort LightSourcePower { get; }
+    public byte LightSourcePower { get; }
     public Sprite GroundSprite { get; }
     public float SpriteScale { get; }
     public Vector2 SpriteOffset { get; }
@@ -29,7 +29,7 @@ public class PrimaryBlocks : Item
 
     public PrimaryBlocks(ushort id, string name, string description, ushort maxStack, ushort currentStack, Sprite sprite, ushort dropId,
             BlockTypes blockType, bool isSolid, bool isTransparent, short hp, short hpMax, ushort solidityLevel, ushort textureId = TextureIds.None, Sprite groundSprite = null, float spriteScale = 1f,
-            Vector2 spriteOffset = new Vector2(), bool spriteUnderPlayer = false, ushort lightSourcePower = 0)
+            Vector2 spriteOffset = new Vector2(), bool spriteUnderPlayer = false, byte lightSourcePower = 0)
             : base(id, name, description, maxStack, currentStack, sprite)
     {
         DropId = dropId;

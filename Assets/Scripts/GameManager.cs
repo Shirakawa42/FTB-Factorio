@@ -13,6 +13,9 @@ public class GameManager : MonoBehaviour
         Globals.SpritePool = GetComponent<SpritePool>();
         Globals.Canvas = GameObject.Find("Canvas");
         Globals.ChunksManager = GetComponent<ChunksManager>();
+        Globals.ChunkMaterialFloor = Resources.Load<Material>("Materials/BlockMaterialFloor");
+        Globals.ChunkMaterialSolid = Resources.Load<Material>("Materials/BlockMaterialSolid");
+        Globals.SpritesMaterial = Resources.Load<Material>("Materials/Sprites");
 
         Globals.Sprites.InitSprites();
         ItemInfos.InitItems();

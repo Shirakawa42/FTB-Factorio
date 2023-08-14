@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
@@ -23,14 +24,24 @@ public enum ChunkTypes
 
 public struct ChunkModification
 {
-    public Vector2Int BlockPosition;
+    public ushort BlockPosition;
     public ushort Id;
-    public short Light;
 
-    public ChunkModification(Vector2Int blockPosition, ushort id, short light)
+    public ChunkModification(ushort blockPosition, ushort id)
     {
         BlockPosition = blockPosition;
         Id = id;
+    }
+}
+
+public struct LightModification
+{
+    public ushort BlockPosition;
+    public byte Light;
+
+    public LightModification(ushort blockPosition, byte light)
+    {
+        BlockPosition = blockPosition;
         Light = light;
     }
 }
@@ -62,19 +73,24 @@ public class Chunk
         ChunkType = chunkType;
     }
 
-    public void AddModification(Vector2Int blockPosition, ushort id, short light)
+    public void AddModification(Vector2Int blockPosition, ushort id)
     {
-        _modifications.Push(new ChunkModification(blockPosition, id, light));
+        _modifications.Push(new ChunkModification(GetBlockIndex(blockPosition), id));
     }
 
     private void ApplyModifications()
     {
-        while (_modifications.Count > 0)
-        {
-            ChunkModification modification = _modifications.Pop();
-            Block block = _blocs[modification.BlockPosition.x + modification.BlockPosition.y * Globals.ChunkSize];
-            _blocs[modification.BlockPosition.x + modification.BlockPosition.y * Globals.ChunkSize] = new Block(modification.Id, (byte)(block.Light + modification.Light));
-        }
+
+    }
+
+    private ushort GetBlockIndex(Vector2Int position)
+    {
+        return (ushort)(position.x + position.y * Globals.ChunkSize);
+    }
+
+    private Vector2Int GetBlockPosition(ushort index)
+    {
+        return new Vector2Int(index % Globals.ChunkSize, index / Globals.ChunkSize);
     }
 
     public void ReloadChunk()
@@ -96,9 +112,19 @@ public class Chunk
         return _isLoaded;
     }
 
-    public ushort GetBlockId(Vector2Int position)
+    public ushort GetBlockId(ushort position)
     {
-        return _blocs[position.x + position.y * Globals.ChunkSize].Id;
+        return _blocs[position].Id;
+    }
+
+    public Block GetBlock(ushort position)
+    {
+        return _blocs[position];
+    }
+
+    public void SetLight(ushort position, byte light)
+    {
+        _blocs[position].Light = light;
     }
 
     private void CheckAndRemoveSprite(int index)
@@ -110,13 +136,27 @@ public class Chunk
         }
     }
 
-    public void SetBlock(Vector2Int position, ushort blockId)
+    public void SetBlock(ushort index, ushort blockId)
     {
-        int index = position.x + position.y * Globals.ChunkSize;
         CheckAndRemoveSprite(index);
-        _blocs[position.x + position.y * Globals.ChunkSize] = new Block(blockId, _blocs[position.x + position.y * Globals.ChunkSize].Light);
-        CheckAndAddSprite(index, position);
-        ReloadChunk();
+
+        _blocs[index].Id = blockId;
+
+        CheckAndAddSprite(index);
+
+        if (_blocs[index].Light != 0)
+            Globals.ChunksManager.StartFloodFill(WorldsHelper.GetBlockWorldPositionFromIndexInChunk(Position, index), _blocs[index].Light, true, WorldId);
+
+        if (ItemInfos.GetPrimaryBlockFromId(blockId).LightSourcePower != 0)
+            Globals.ChunksManager.StartFloodFill(WorldsHelper.GetBlockWorldPositionFromIndexInChunk(Position, index), ItemInfos.GetPrimaryBlockFromId(blockId).LightSourcePower, false, WorldId);
+
+        if (_blocs[index].Light == 0 && ItemInfos.GetPrimaryBlockFromId(blockId).LightSourcePower == 0)
+            ReloadChunk();
+    }
+
+    public byte GetLightIntensity(ushort position)
+    {
+        return _blocs[position].Light;
     }
 
     private Transform GetParent()
@@ -126,7 +166,7 @@ public class Chunk
             return world.transform.Find("floor");
         else if (ChunkType == ChunkTypes.Solid)
             return world.transform.Find("solid");
-        throw new System.Exception("Chunk type does not exist or child not found");
+        throw new Exception("Chunk type does not exist or child not found");
     }
 
     private void InitGameObject()
@@ -145,9 +185,9 @@ public class Chunk
             _meshRenderer.material = Globals.ChunkMaterialSolid;
     }
 
-    private void CheckAndAddSprite(int index, Vector2Int localPosition)
+    private void CheckAndAddSprite(ushort index)
     {
-        PrimaryBlocks block = (PrimaryBlocks)ItemInfos.GetItemFromId(GetBlockId(localPosition));
+        PrimaryBlocks block = (PrimaryBlocks)ItemInfos.GetItemFromId(GetBlockId(index));
         if (block.GroundSprite == null)
             return;
 
@@ -157,7 +197,8 @@ public class Chunk
             if (block.SpriteUnderPlayer)
                 layer = "SpriteUnderPlayer";
 
-            GameObject spriteObj = Globals.SpritePool.GetSpriteObj(block.GroundSprite, new Vector3(localPosition.x, localPosition.y, 0), _chunkGameObject.transform, block.SpriteScale, block.SpriteOffset, layer);
+            Vector2Int position = GetBlockPosition(index);
+            GameObject spriteObj = Globals.SpritePool.GetSpriteObj(block.GroundSprite, new Vector3(position.x, position.y, 0), _chunkGameObject.transform, block.SpriteScale, block.SpriteOffset, layer);
             _sprites.Add(index, spriteObj);
         }
     }
@@ -165,7 +206,7 @@ public class Chunk
     private void GenerateBlocks()
     {
         byte light = 1;
-        for (int i = 0; i < _blocs.Length; i++)
+        for (ushort i = 0; i < _blocs.Length; i++)
         {
             Vector2Int worldPosition = new(Position.x * Globals.ChunkSize + i % Globals.ChunkSize, Position.y * Globals.ChunkSize + i / Globals.ChunkSize);
             if (ChunkType == ChunkTypes.Floor)
@@ -173,7 +214,7 @@ public class Chunk
             else if (ChunkType == ChunkTypes.Solid)
             {
                 _blocs[i] = new Block(Noise.GetSolidBlockAtWorldPosition(worldPosition, WorldId), light);
-                CheckAndAddSprite(i, new Vector2Int(i % Globals.ChunkSize, i / Globals.ChunkSize));
+                CheckAndAddSprite(i);
             }
         }
     }
@@ -196,7 +237,7 @@ public class Chunk
                 int blockPosition = x + y * Globals.ChunkSize;
                 ushort blockId = _blocs[blockPosition].Id;
                 ushort textureId = ((PrimaryBlocks)ItemInfos.GetItemFromId(blockId)).TextureId;
-                byte lightValue = (byte)Mathf.Min(_blocs[blockPosition].Light, 32);
+                byte lightValue = (byte)Mathf.Min(_blocs[blockPosition].Light, 255);
 
                 if (blockId == ItemIds.Air || textureId == ushort.MaxValue)
                 {

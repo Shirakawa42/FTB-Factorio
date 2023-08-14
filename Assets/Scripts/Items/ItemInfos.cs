@@ -209,7 +209,7 @@ public static class ItemInfos
                     spriteScale: 0.75f,
                     spriteOffset: new Vector2(0, 0.25f),
                     spriteUnderPlayer: true,
-                    lightSourcePower: 32
+                    lightSourcePower: 255
                 )
             }
             #endregion
@@ -220,6 +220,13 @@ public static class ItemInfos
     {
         if (Items.ContainsKey(id))
             return Items[id];
+        return null;
+    }
+
+    public static PrimaryBlocks GetPrimaryBlockFromId(ushort id)
+    {
+        if (Items.ContainsKey(id))
+            return (PrimaryBlocks)Items[id];
         return null;
     }
 

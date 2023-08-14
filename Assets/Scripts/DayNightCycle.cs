@@ -8,13 +8,6 @@ public class DayNightCycle : MonoBehaviour
     private float _DayLight = 1.0f;
     private bool _DayLightIncreasing = false;
 
-    void Awake()
-    {
-        Globals.ChunkMaterialFloor = Resources.Load<Material>("Materials/BlockMaterialFloor");
-        Globals.ChunkMaterialSolid = Resources.Load<Material>("Materials/BlockMaterialSolid");
-        Globals.SpritesMaterial = Resources.Load<Material>("Materials/Sprites");
-    }
-
     void Update()
     {
         UpdateDayLight();
@@ -23,9 +16,9 @@ public class DayNightCycle : MonoBehaviour
     void UpdateDayLight()
     {
         if (_DayLightIncreasing)
-            SetDaylight(_DayLight + Time.deltaTime * 0.1f);
+            SetDaylight(_DayLight + Time.deltaTime * 0.3f);
         else
-            SetDaylight(_DayLight - Time.deltaTime * 0.1f);
+            SetDaylight(_DayLight - Time.deltaTime * 0.3f);
     }
 
     void SetDaylight(float daylight)
