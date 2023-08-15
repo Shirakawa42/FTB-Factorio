@@ -119,17 +119,55 @@ public class ChunksManager : MonoBehaviour
         }
     }
 
+    private const int MAX_CACHED_CHUNKS = 4;
+    private static readonly Chunk[] cachedSolidChunks = new Chunk[MAX_CACHED_CHUNKS];
+    private static readonly Chunk[] cachedFloorChunks = new Chunk[MAX_CACHED_CHUNKS];
+    private static int currentSolidIndex = 0;
+    private static int currentFloorIndex = 0;
+
     public Chunk GetChunk(Vector2Int position, WorldsIds worldId, ChunkTypes chunkType)
     {
-        MapKey key = new(position, worldId);
+        Chunk[] currentCache;
+        int currentIndex;
+        if (chunkType == ChunkTypes.Solid)
+        {
+            currentCache = cachedSolidChunks;
+            currentIndex = currentSolidIndex;
+        }
+        else if (chunkType == ChunkTypes.Floor)
+        {
+            currentCache = cachedFloorChunks;
+            currentIndex = currentFloorIndex;
+        }
+        else
+            throw new System.Exception("Chunk type not found");
+
+        for (int i = 0; i < MAX_CACHED_CHUNKS; i++)
+        {
+            Chunk chunk = currentCache[i];
+            if (chunk != null && chunk.Position == position && chunk.WorldId == worldId && chunk.ChunkType == chunkType)
+                return chunk;
+        }
+
+        MapKey key = new MapKey(position, worldId);
         if (!_chunks.ContainsKey(key))
             _chunks.Add(key, new MapValue(new Chunk(position, worldId, ChunkTypes.Floor), new Chunk(position, worldId, ChunkTypes.Solid)));
+
+        Chunk desiredChunk;
         if (chunkType == ChunkTypes.Floor)
-            return _chunks[key].FloorChunk;
-        else if (chunkType == ChunkTypes.Solid)
-            return _chunks[key].SolidChunk;
-        throw new System.Exception("Chunk type not found");
+            desiredChunk = _chunks[key].FloorChunk;
+        else
+            desiredChunk = _chunks[key].SolidChunk;
+
+        currentCache[currentIndex] = desiredChunk;
+        if (chunkType == ChunkTypes.Solid)
+            currentSolidIndex = (currentSolidIndex + 1) % MAX_CACHED_CHUNKS;
+        else
+            currentFloorIndex = (currentFloorIndex + 1) % MAX_CACHED_CHUNKS;
+
+        return desiredChunk;
     }
+
 
     private HashSet<Vector2Int> _lightSourcesToRecalculate = new();
     public HashSet<MapKey> modifiedChunks = new();
@@ -204,7 +242,7 @@ public class ChunksManager : MonoBehaviour
         Vector2Int chunkPosition = WorldsHelper.GetChunkPositionFromWorldPosition(new Vector3(blockWorldPosition.x, blockWorldPosition.y, 0));
         ushort blockPosition = WorldsHelper.GetBlockPositionFromWorldPosition(new Vector3(blockWorldPosition.x, blockWorldPosition.y, 0));
 
-        Chunk chunk = Globals.ChunksManager.GetChunk(chunkPosition, worldId, chunkType);
+        Chunk chunk = GetChunk(chunkPosition, worldId, chunkType);
         if (chunk != null && chunk.IsLoaded())
             return chunk.GetBlock(blockPosition);
         return new Block(ItemIds.Air, 0);
@@ -215,10 +253,10 @@ public class ChunksManager : MonoBehaviour
         Vector2Int chunkPosition = WorldsHelper.GetChunkPositionFromWorldPosition(new Vector3(blockWorldPosition.x, blockWorldPosition.y, 0));
         ushort blockPosition = WorldsHelper.GetBlockPositionFromWorldPosition(new Vector3(blockWorldPosition.x, blockWorldPosition.y, 0));
 
-        Chunk chunk = Globals.ChunksManager.GetChunk(chunkPosition, worldId, ChunkTypes.Solid);
+        Chunk chunk = GetChunk(chunkPosition, worldId, ChunkTypes.Solid);
         if (chunk != null && chunk.IsLoaded())
             chunk.SetLight(blockPosition, lightLevel);
-        chunk = Globals.ChunksManager.GetChunk(chunkPosition, worldId, ChunkTypes.Floor);
+        chunk = GetChunk(chunkPosition, worldId, ChunkTypes.Floor);
         if (chunk != null && chunk.IsLoaded())
             chunk.SetLight(blockPosition, lightLevel);
     }
