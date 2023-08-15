@@ -131,10 +131,10 @@ public class ChunksManager : MonoBehaviour
         throw new System.Exception("Chunk type not found");
     }
 
-    private static HashSet<Vector2Int> _lightSourcesToRecalculate = new();
-    private HashSet<MapKey> _modifiedChunks = new();
+    private HashSet<Vector2Int> _lightSourcesToRecalculate = new();
+    public HashSet<MapKey> modifiedChunks = new();
 
-    private void FloodFill(Vector2Int blockWorldPosition, byte lightIntensity, bool removeLight, WorldsIds worldsId)
+    private void FloodFill(Vector2Int blockWorldPosition, byte lightIntensity, bool removeLight, WorldsIds worldsId, bool isSource)
     {
         if (lightIntensity == 0)
             return;
@@ -145,11 +145,11 @@ public class ChunksManager : MonoBehaviour
             SetLight(blockWorldPosition, lightIntensity, worldsId);
 
         Chunk chunk = GetChunk(WorldsHelper.GetChunkPositionFromWorldPosition(new Vector3(blockWorldPosition.x, blockWorldPosition.y, 0)), worldsId, ChunkTypes.Solid);
-        if (!_modifiedChunks.Contains(new MapKey(chunk.Position, worldsId)))
-            _modifiedChunks.Add(new MapKey(chunk.Position, worldsId));
+        if (!modifiedChunks.Contains(new MapKey(chunk.Position, worldsId)))
+            modifiedChunks.Add(new MapKey(chunk.Position, worldsId));
 
         byte newlightIntensity;
-        if (removeLight || ItemInfos.GetPrimaryBlockFromId(GetBlock(blockWorldPosition, worldsId, ChunkTypes.Solid).Id).IsTransparent)
+        if (isSource || ItemInfos.GetPrimaryBlockFromId(GetBlock(blockWorldPosition, worldsId, ChunkTypes.Solid).Id).IsTransparent)
             newlightIntensity = (lightIntensity < 32) ? (byte)0 : (byte)(lightIntensity - 32);
         else
             newlightIntensity = (lightIntensity < 96) ? (byte)0 : (byte)(lightIntensity - 96);
@@ -162,37 +162,41 @@ public class ChunksManager : MonoBehaviour
         if (leftBlock.Light >= lightIntensity && removeLight)
             _lightSourcesToRecalculate.Add(new Vector2Int(blockWorldPosition.x - 1, blockWorldPosition.y));
         else if (leftBlock.Light <= newlightIntensity)
-            FloodFill(new Vector2Int(blockWorldPosition.x - 1, blockWorldPosition.y), newlightIntensity, removeLight, worldsId);
+            FloodFill(new Vector2Int(blockWorldPosition.x - 1, blockWorldPosition.y), newlightIntensity, removeLight, worldsId, false);
 
         if (rightBlock.Light >= lightIntensity && removeLight)
             _lightSourcesToRecalculate.Add(new Vector2Int(blockWorldPosition.x + 1, blockWorldPosition.y));
         else if (rightBlock.Light <= newlightIntensity)
-            FloodFill(new Vector2Int(blockWorldPosition.x + 1, blockWorldPosition.y), newlightIntensity, removeLight, worldsId);
+            FloodFill(new Vector2Int(blockWorldPosition.x + 1, blockWorldPosition.y), newlightIntensity, removeLight, worldsId, false);
 
         if (upBlock.Light >= lightIntensity && removeLight)
             _lightSourcesToRecalculate.Add(new Vector2Int(blockWorldPosition.x, blockWorldPosition.y + 1));
         else if (upBlock.Light <= newlightIntensity)
-            FloodFill(new Vector2Int(blockWorldPosition.x, blockWorldPosition.y + 1), newlightIntensity, removeLight, worldsId);
+            FloodFill(new Vector2Int(blockWorldPosition.x, blockWorldPosition.y + 1), newlightIntensity, removeLight, worldsId, false);
 
         if (downBlock.Light >= lightIntensity && removeLight)
             _lightSourcesToRecalculate.Add(new Vector2Int(blockWorldPosition.x, blockWorldPosition.y - 1));
         else if (downBlock.Light <= newlightIntensity)
-            FloodFill(new Vector2Int(blockWorldPosition.x, blockWorldPosition.y - 1), newlightIntensity, removeLight, worldsId);
+            FloodFill(new Vector2Int(blockWorldPosition.x, blockWorldPosition.y - 1), newlightIntensity, removeLight, worldsId, false);
     }
 
     public void StartFloodFill(Vector2Int blockWorldPosition, byte lightIntensity, bool removeLight, WorldsIds worldId)
     {
-        FloodFill(blockWorldPosition, lightIntensity, removeLight, worldId);
+        FloodFill(blockWorldPosition, lightIntensity, removeLight, worldId, true);
         while (removeLight && _lightSourcesToRecalculate.Count > 0)
         {
             blockWorldPosition = _lightSourcesToRecalculate.First();
             _lightSourcesToRecalculate.Remove(blockWorldPosition);
             lightIntensity = GetBlock(blockWorldPosition, worldId, ChunkTypes.Solid).Light;
-            FloodFill(blockWorldPosition, lightIntensity, false, worldId);
+            FloodFill(blockWorldPosition, lightIntensity, false, worldId, false);
         }
-        foreach (MapKey key in _modifiedChunks)
+    }
+
+    public void ReloadModifiedChunks()
+    {
+        foreach (MapKey key in modifiedChunks)
             _chunksToLoad.Push(key);
-        _modifiedChunks.Clear();
+        modifiedChunks.Clear();
     }
 
     public Block GetBlock(Vector2Int blockWorldPosition, WorldsIds worldId, ChunkTypes chunkType)

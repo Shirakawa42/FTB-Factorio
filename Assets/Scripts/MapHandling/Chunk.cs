@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
 
-public struct Block
+public class Block
 {
     public ushort Id;
     public byte Light;
@@ -68,6 +68,7 @@ public class Chunk
     private readonly Block[] _blocs = new Block[Globals.ChunkSize * Globals.ChunkSize];
     private readonly Stack<ChunkModification> _modifications = new();
     private bool _isLoaded = false;
+    private bool _firstOutlines = false;
 
 
     public Chunk(Vector2Int position, WorldsIds worldId, ChunkTypes chunkType)
@@ -111,7 +112,11 @@ public class Chunk
     {
         PreloadChunk();
 
-        CalculateOutlines();
+        if (!_firstOutlines)
+        {
+            _firstOutlines = true;
+            CalculateOutlines();
+        }
         ApplyModifications();
         GenerateVertices();
         GenerateMesh();
@@ -153,28 +158,33 @@ public class Chunk
         {
             for (int y = 0; y < Globals.ChunkSize; y++)
             {
-                int i = x + y * Globals.ChunkSize;
-
-                if (ItemInfos.GetPrimaryBlockFromId(_blocs[i].Id).IsSolid == false)
-                    continue;
-
-                byte outlines = 0;
-
-                if (ItemInfos.GetPrimaryBlockFromId(GetWorldBlock(x - 1, y).Id).IsSolid == false)
-                    outlines |= 0x1;
-
-                if (ItemInfos.GetPrimaryBlockFromId(GetWorldBlock(x + 1, y).Id).IsSolid == false)
-                    outlines |= 0x2;
-
-                if (ItemInfos.GetPrimaryBlockFromId(GetWorldBlock(x, y - 1).Id).IsSolid == false)
-                    outlines |= 0x4;
-
-                if (ItemInfos.GetPrimaryBlockFromId(GetWorldBlock(x, y + 1).Id).IsSolid == false)
-                    outlines |= 0x8;
-
-                _blocs[i].Outlines = outlines;
+                CalculateOutlinesAtPosition(x, y);
             }
         }
+    }
+
+    public void CalculateOutlinesAtPosition(int x, int y)
+    {
+        Block block = GetWorldBlock(x, y);
+
+        if (ItemInfos.GetPrimaryBlockFromId(block.Id).IsSolid == false)
+            return;
+
+        byte outlines = 0;
+
+        if (ItemInfos.GetPrimaryBlockFromId(GetWorldBlock(x - 1, y).Id).IsSolid == false)
+            outlines |= 0x1;
+
+        if (ItemInfos.GetPrimaryBlockFromId(GetWorldBlock(x + 1, y).Id).IsSolid == false)
+            outlines |= 0x2;
+
+        if (ItemInfos.GetPrimaryBlockFromId(GetWorldBlock(x, y - 1).Id).IsSolid == false)
+            outlines |= 0x4;
+
+        if (ItemInfos.GetPrimaryBlockFromId(GetWorldBlock(x, y + 1).Id).IsSolid == false)
+            outlines |= 0x8;
+
+        block.Outlines = outlines;
     }
 
     private void CheckAndRemoveSprite(int index)
@@ -192,6 +202,23 @@ public class Chunk
 
         _blocs[index].Id = blockId;
 
+        int x = index % Globals.ChunkSize;
+        int y = index / Globals.ChunkSize;
+        CalculateOutlinesAtPosition(x, y);
+        CalculateOutlinesAtPosition(x - 1, y);
+        CalculateOutlinesAtPosition(x + 1, y);
+        CalculateOutlinesAtPosition(x, y - 1);
+        CalculateOutlinesAtPosition(x, y + 1);
+
+        if (x - 1 < 0)
+            Globals.ChunksManager.modifiedChunks.Add(new MapKey(new Vector2Int(Position.x - 1, Position.y), WorldId));
+        else if (x + 1 >= Globals.ChunkSize)
+            Globals.ChunksManager.modifiedChunks.Add(new MapKey(new Vector2Int(Position.x + 1, Position.y), WorldId));
+        if (y - 1 < 0)
+            Globals.ChunksManager.modifiedChunks.Add(new MapKey(new Vector2Int(Position.x, Position.y - 1), WorldId));
+        else if (y + 1 >= Globals.ChunkSize)
+            Globals.ChunksManager.modifiedChunks.Add(new MapKey(new Vector2Int(Position.x, Position.y + 1), WorldId));
+
         CheckAndAddSprite(index);
 
         if (_blocs[index].Light != 0)
@@ -200,8 +227,8 @@ public class Chunk
         if (ItemInfos.GetPrimaryBlockFromId(blockId).LightSourcePower != 0)
             Globals.ChunksManager.StartFloodFill(WorldsHelper.GetBlockWorldPositionFromIndexInChunk(Position, index), ItemInfos.GetPrimaryBlockFromId(blockId).LightSourcePower, false, WorldId);
 
-        if (_blocs[index].Light == 0 && ItemInfos.GetPrimaryBlockFromId(blockId).LightSourcePower == 0)
-            ReloadChunk();
+        Globals.ChunksManager.modifiedChunks.Add(new MapKey(Position, WorldId));
+        Globals.ChunksManager.ReloadModifiedChunks();
     }
 
     public byte GetLightIntensity(ushort position)

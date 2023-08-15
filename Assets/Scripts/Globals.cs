@@ -11,6 +11,7 @@ public static class Globals
     public const int ToolbarSlots = 9;
     public const int InventorySlots = 27;
     public const int NbTreeSprites = 3;
+    public const int MaxItemID = 512;
 
     public static WorldsIds CurrentWorldId = WorldsIds.overworld;
     public static GameObject CurrentWorld;
