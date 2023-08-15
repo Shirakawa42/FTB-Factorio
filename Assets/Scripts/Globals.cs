@@ -5,7 +5,8 @@ using UnityEngine;
 public static class Globals
 {
     public const int ChunkSize = 64;
-    public const int LoadDistance = 2;
+    public const int LoadDistance = 1;
+    public const int PreloadDistance = LoadDistance + 1;
     public const int Seed = 56231;
     public const int ToolbarSlots = 9;
     public const int InventorySlots = 27;

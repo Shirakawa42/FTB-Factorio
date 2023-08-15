@@ -8,11 +8,13 @@ public struct Block
 {
     public ushort Id;
     public byte Light;
+    public byte Outlines;
 
     public Block(ushort id, byte light)
     {
         Id = id;
         Light = light;
+        Outlines = 0;
     }
 }
 
@@ -56,6 +58,8 @@ public class Chunk
     private readonly List<int> _indices = new();
     private readonly List<Vector2> _uvs = new();
     private readonly List<Vector2> _uvts = new();
+    private readonly List<Vector2> _outlineNS = new();
+    private readonly List<Vector2> _outlineEW = new();
     private MeshRenderer _meshRenderer;
     private MeshFilter _meshFilter;
     private GameObject _chunkGameObject;
@@ -93,7 +97,7 @@ public class Chunk
         return new Vector2Int(index % Globals.ChunkSize, index / Globals.ChunkSize);
     }
 
-    public void ReloadChunk()
+    public void PreloadChunk()
     {
         if (!_isLoaded)
         {
@@ -101,7 +105,13 @@ public class Chunk
             GenerateBlocks();
             _isLoaded = true;
         }
+    }
 
+    public void ReloadChunk()
+    {
+        PreloadChunk();
+
+        CalculateOutlines();
         ApplyModifications();
         GenerateVertices();
         GenerateMesh();
@@ -125,6 +135,46 @@ public class Chunk
     public void SetLight(ushort position, byte light)
     {
         _blocs[position].Light = light;
+    }
+
+    private Block GetWorldBlock(int x, int y)
+    {
+        int index = x + y * Globals.ChunkSize;
+        if (x >= 0 && x < Globals.ChunkSize && y >= 0 && y < Globals.ChunkSize)
+            return _blocs[index];
+
+        Vector2Int globalPos = new(Position.x * Globals.ChunkSize + x, Position.y * Globals.ChunkSize + y);
+        return Globals.ChunksManager.GetBlock(globalPos, WorldId, ChunkType);
+    }
+
+    private void CalculateOutlines()
+    {
+        for (int x = 0; x < Globals.ChunkSize; x++)
+        {
+            for (int y = 0; y < Globals.ChunkSize; y++)
+            {
+                int i = x + y * Globals.ChunkSize;
+
+                if (ItemInfos.GetPrimaryBlockFromId(_blocs[i].Id).IsSolid == false)
+                    continue;
+
+                byte outlines = 0;
+
+                if (ItemInfos.GetPrimaryBlockFromId(GetWorldBlock(x - 1, y).Id).IsSolid == false)
+                    outlines |= 0x1;
+
+                if (ItemInfos.GetPrimaryBlockFromId(GetWorldBlock(x + 1, y).Id).IsSolid == false)
+                    outlines |= 0x2;
+
+                if (ItemInfos.GetPrimaryBlockFromId(GetWorldBlock(x, y - 1).Id).IsSolid == false)
+                    outlines |= 0x4;
+
+                if (ItemInfos.GetPrimaryBlockFromId(GetWorldBlock(x, y + 1).Id).IsSolid == false)
+                    outlines |= 0x8;
+
+                _blocs[i].Outlines = outlines;
+            }
+        }
     }
 
     private void CheckAndRemoveSprite(int index)
@@ -225,6 +275,8 @@ public class Chunk
         _indices.Clear();
         _uvs.Clear();
         _uvts.Clear();
+        _outlineNS.Clear();
+        _outlineEW.Clear();
 
         bool[,] visited = new bool[Globals.ChunkSize, Globals.ChunkSize];
 
@@ -250,6 +302,7 @@ public class Chunk
                 while (x + width < Globals.ChunkSize &&
                         _blocs[x + width + y * Globals.ChunkSize].Id == blockId &&
                         _blocs[x + width + y * Globals.ChunkSize].Light == lightValue &&
+                        _blocs[x + width + y * Globals.ChunkSize].Outlines == _blocs[blockPosition].Outlines &&
                         !visited[x + width, y])
                 {
                     width++;
@@ -262,6 +315,7 @@ public class Chunk
                     {
                         if (_blocs[x + i + (y + height) * Globals.ChunkSize].Id != blockId ||
                             _blocs[x + i + (y + height) * Globals.ChunkSize].Light != lightValue ||
+                            _blocs[x + i + (y + height) * Globals.ChunkSize].Outlines != _blocs[blockPosition].Outlines ||
                             visited[x + i, y + height])
                         {
                             validHeight = false;
@@ -314,6 +368,26 @@ public class Chunk
                     new Vector2(textureId, lightValue)
                 });
 
+                byte currentOutlines = _blocs[blockPosition].Outlines;
+                Vector2 northSouthOutline = new((currentOutlines & 0x8) >> 3, (currentOutlines & 0x4) >> 2);
+                Vector2 eastWestOutline = new((currentOutlines & 0x2) >> 1, currentOutlines & 0x1);
+
+                _outlineNS.AddRange(new Vector2[]
+                {
+                    northSouthOutline,
+                    northSouthOutline,
+                    northSouthOutline,
+                    northSouthOutline
+                });
+
+                _outlineEW.AddRange(new Vector2[]
+                {
+                    eastWestOutline,
+                    eastWestOutline,
+                    eastWestOutline,
+                    eastWestOutline
+                });
+
             }
         }
     }
@@ -325,6 +399,8 @@ public class Chunk
         _mesh.triangles = _indices.ToArray();
         _mesh.uv = _uvs.ToArray();
         _mesh.uv2 = _uvts.ToArray();
+        _mesh.uv3 = _outlineNS.ToArray();
+        _mesh.uv4 = _outlineEW.ToArray();
         _mesh.RecalculateNormals();
     }
 }

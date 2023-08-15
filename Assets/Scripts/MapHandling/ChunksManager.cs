@@ -33,6 +33,7 @@ public class ChunksManager : MonoBehaviour
     private WorldsIds _oldWorldId = WorldsIds.overworld;
     private Dictionary<MapKey, MapValue> _chunks = new();
     private Stack<MapKey> _chunksToLoad = new();
+    private Stack<MapKey> _chunksToPreload = new();
 
     void Start()
     {
@@ -44,14 +45,27 @@ public class ChunksManager : MonoBehaviour
     {
         while (true)
         {
-            for (int i = 0; i < 2; i++)
+            for (int i = 0; i < 4; i++)
             {
-                if (_chunksToLoad.Count > 0)
+                if (_chunksToPreload.Count > 0)
                 {
-                    MapKey key = _chunksToLoad.Pop();
+                    MapKey key = _chunksToPreload.Pop();
                     MapValue chunks = _chunks[key];
-                    chunks.FloorChunk.ReloadChunk();
-                    chunks.SolidChunk.ReloadChunk();
+                    chunks.FloorChunk.PreloadChunk();
+                    chunks.SolidChunk.PreloadChunk();
+                }
+            }
+            if (_chunksToPreload.Count == 0)
+            {
+                for (int i = 0; i < 2; i++)
+                {
+                    if (_chunksToLoad.Count > 0)
+                    {
+                        MapKey key = _chunksToLoad.Pop();
+                        MapValue chunks = _chunks[key];
+                        chunks.FloorChunk.ReloadChunk();
+                        chunks.SolidChunk.ReloadChunk();
+                    }
                 }
             }
             yield return null;
@@ -61,12 +75,13 @@ public class ChunksManager : MonoBehaviour
     private void LoadAroundPlayer()
     {
         Vector3 _playerPosition = Globals.Player.transform.position;
-        Vector2Int chunkPosition = new((int)_playerPosition.x / Globals.ChunkSize, (int)_playerPosition.y / Globals.ChunkSize);
+        Vector2Int chunkPosition = WorldsHelper.GetChunkPositionFromWorldPosition(_playerPosition);
 
         if (chunkPosition != _playerChunkPosition || Globals.CurrentWorldId != _oldWorldId)
         {
             _oldWorldId = Globals.CurrentWorldId;
             _playerChunkPosition = chunkPosition;
+            PreloadAroundChunkPosition(_playerChunkPosition, Globals.CurrentWorldId);
             LoadAroundChunkPosition(_playerChunkPosition, Globals.CurrentWorldId);
         }
     }
@@ -76,16 +91,30 @@ public class ChunksManager : MonoBehaviour
         LoadAroundPlayer();
     }
 
-    public void LoadAroundChunkPosition(Vector2Int position, WorldsIds worldId)
+    private void LoadAroundChunkPosition(Vector2Int position, WorldsIds worldId)
     {
-        for (int x = position.x - Globals.LoadDistance; x < position.x + Globals.LoadDistance; x++)
+        for (int x = position.x - Globals.LoadDistance; x <= position.x + Globals.LoadDistance; x++)
         {
-            for (int y = position.y - Globals.LoadDistance; y < position.y + Globals.LoadDistance; y++)
+            for (int y = position.y - Globals.LoadDistance; y <= position.y + Globals.LoadDistance; y++)
             {
                 MapKey key = new(new Vector2Int(x, y), worldId);
                 if (!_chunks.ContainsKey(key))
                     _chunks.Add(key, new MapValue(new Chunk(new Vector2Int(x, y), worldId, ChunkTypes.Floor), new Chunk(new Vector2Int(x, y), worldId, ChunkTypes.Solid)));
                 _chunksToLoad.Push(key);
+            }
+        }
+    }
+
+    private void PreloadAroundChunkPosition(Vector2Int position, WorldsIds worldId)
+    {
+        for (int x = position.x - Globals.PreloadDistance; x <= position.x + Globals.PreloadDistance; x++)
+        {
+            for (int y = position.y - Globals.PreloadDistance; y <= position.y + Globals.PreloadDistance; y++)
+            {
+                MapKey key = new(new Vector2Int(x, y), worldId);
+                if (!_chunks.ContainsKey(key))
+                    _chunks.Add(key, new MapValue(new Chunk(new Vector2Int(x, y), worldId, ChunkTypes.Floor), new Chunk(new Vector2Int(x, y), worldId, ChunkTypes.Solid)));
+                _chunksToPreload.Push(key);
             }
         }
     }
