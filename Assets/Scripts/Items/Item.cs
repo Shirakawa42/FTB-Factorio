@@ -24,6 +24,16 @@ public class Item
 
     }
 
+    public virtual void EquippedEffect()
+    {
+
+    }
+
+    public virtual void UnequippedEffect()
+    {
+
+    }
+
     public Item(ushort id, string name, string description, ushort maxStack, ushort currentStack, Sprite sprite)
     {
         Id = id;

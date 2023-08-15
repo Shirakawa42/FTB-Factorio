@@ -18,6 +18,9 @@ public class PrimaryBlocks : Item
     public Vector2 SpriteOffset { get; }
     public bool SpriteUnderPlayer { get; }
 
+    private Vector2Int _lastBlockPosition = new(int.MaxValue, int.MaxValue);
+    private WorldsIds _lastWorldId = WorldsIds.None;
+
     public override void RightClick(Animation animation)
     {
         Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -25,6 +28,28 @@ public class PrimaryBlocks : Item
         if (distance > 4f || WorldsHelper.GetBlockStats(mousePosition, Globals.CurrentWorldId, ChunkTypes.Solid).Id != ItemIds.Air)
             return;
         WorldsHelper.SetBlock(mousePosition, Id, Globals.CurrentWorldId, ChunkTypes.Solid);
+    }
+
+    public override void EquippedEffect()
+    {
+        Vector2Int newPos = WorldsHelper.WorldPositionToVector2Int(Globals.Player.transform.position);
+        if ((newPos == _lastBlockPosition && _lastWorldId == Globals.CurrentWorldId) || LightSourcePower == 0)
+            return;
+
+        if (_lastWorldId != WorldsIds.None)
+            Globals.ChunksManager.StartFloodFill(_lastBlockPosition, LightSourcePower, true, _lastWorldId);
+        Globals.ChunksManager.StartFloodFill(newPos, LightSourcePower, false, Globals.CurrentWorldId);
+        _lastBlockPosition = newPos;
+        _lastWorldId = Globals.CurrentWorldId;
+        Globals.ChunksManager.ReloadModifiedChunks();
+    }
+
+    public override void UnequippedEffect()
+    {
+        Globals.ChunksManager.StartFloodFill(_lastBlockPosition, LightSourcePower, true, Globals.CurrentWorldId);
+        _lastBlockPosition = new(int.MaxValue, int.MaxValue);
+        _lastWorldId = WorldsIds.None;
+        Globals.ChunksManager.ReloadModifiedChunks();
     }
 
     public PrimaryBlocks(ushort id, string name, string description, ushort maxStack, ushort currentStack, Sprite sprite, ushort dropId,

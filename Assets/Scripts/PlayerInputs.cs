@@ -27,10 +27,15 @@ public class PlayerInputs : MonoBehaviour
     void Update()
     {
         Inputs();
+        if (EquippedItem != null)
+            EquippedItem.EquippedEffect();
     }
 
     public void SetEquippedItem(Item item)
     {
+        if (EquippedItem != null)
+            EquippedItem.UnequippedEffect();
+
         EquippedItem = item;
         if (EquippedItem == null)
             EquippedItemSpriteRenderer.sprite = null;
@@ -56,7 +61,8 @@ public class PlayerInputs : MonoBehaviour
             _cooldownRight = _cooldownMaxRight;
         }
 
-        if (Input.GetKeyDown(KeyCode.Tab)) {
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
             if (_inventoryStatus)
                 _inventory.CloseInventory();
             else
@@ -64,7 +70,8 @@ public class PlayerInputs : MonoBehaviour
             _inventoryStatus = !_inventoryStatus;
         }
 
-        if (Input.GetKeyDown(KeyCode.Escape)) {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
             _inventoryStatus = false;
             _inventory.CloseInventory();
         }

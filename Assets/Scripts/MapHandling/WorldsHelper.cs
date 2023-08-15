@@ -8,7 +8,8 @@ public enum WorldsIds
     low_depth = 1,
     medium_depth = 2,
     deep_depth = 3,
-    hardcore_depth = 4
+    hardcore_depth = 4,
+    None = 5
 }
 
 public static class WorldsHelper

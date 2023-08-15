@@ -17,6 +17,8 @@ public class GameManager : MonoBehaviour
         Globals.ChunkMaterialSolid = Resources.Load<Material>("Materials/BlockMaterialSolid");
         Globals.SpritesMaterial = Resources.Load<Material>("Materials/Sprites");
 
+        Application.targetFrameRate = 6000000;
+
         Globals.Sprites.InitSprites();
         ItemInfos.InitItems();
     }

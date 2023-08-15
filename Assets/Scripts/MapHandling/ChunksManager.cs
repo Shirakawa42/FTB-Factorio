@@ -178,7 +178,7 @@ public class ChunksManager : MonoBehaviour
             return;
 
         if (removeLight)
-            SetLight(blockWorldPosition, 0, worldsId);
+            SetLight(blockWorldPosition, ItemInfos.GetPrimaryBlockFromId(GetBlock(blockWorldPosition, worldsId, ChunkTypes.Solid).Id).LightSourcePower, worldsId);
         else
             SetLight(blockWorldPosition, lightIntensity, worldsId);
 
